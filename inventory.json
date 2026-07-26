@@ -1,5 +1,15 @@
 [
     {
+        "name": "Chinese Gem Vol 6 CBB6C Slim Box",
+        "image": "images/chinese-gem-vol-6-CBB6C-slim-box.webp",
+        "cost": 65,
+        "stock": 0,
+        "isNew": true,
+        "isPopular": false,
+        "isComingSoon": true,
+        "releaseDate": "Aug 7th"
+    },
+    {
         "name": "Chinese Chasing Glory Together CSV10C Slim Box",
         "image": "images/chinese-chasing-glory-together-CSV10C-slim-box.webp",
         "cost": 65,
