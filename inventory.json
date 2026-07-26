@@ -3,15 +3,15 @@
         "name": "Chinese Chasing Glory Together CSV10C Slim Box",
         "image": "images/chinese-chasing-glory-together-CSV10C-slim-box.webp",
         "cost": 65,
-        "stock": 0,
+        "stock": 3,
         "isNew": true,
         "isPopular": false
     },
     {
         "name": "Chinese Terastal Gathering CSV9.5C Slim Box",
         "image": "images/chinese-terastal-gathering-CSV9.5C-slim-box.webp",
-        "cost": 0,
-        "stock": 0,
+        "cost": 125,
+        "stock": 4,
         "isNew": true,
         "isPopular": false
     },
