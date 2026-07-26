@@ -5,7 +5,9 @@
         "cost": 65,
         "stock": 3,
         "isNew": true,
-        "isPopular": false
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
     },
     {
         "name": "Chinese Terastal Gathering CSV9.5C Slim Box",
@@ -13,7 +15,9 @@
         "cost": 130,
         "stock": 4,
         "isNew": true,
-        "isPopular": false
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
     },
     {
         "name": "Chinese Gem Vol 5 CBB5C Slim Box",
@@ -21,7 +25,9 @@
         "cost": 75,
         "stock": 0,
         "isNew": false,
-        "isPopular": false
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
     },
     {
         "name": "Chinese Gem Vol 4 CBB4C Slim Box",
@@ -29,7 +35,9 @@
         "cost": 65,
         "stock": 17,
         "isNew": false,
-        "isPopular": false
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
     },
     {
         "name": "Chinese Gem Vol 3 CBB3C Slim Box",
@@ -37,7 +45,9 @@
         "cost": 90,
         "stock": 0,
         "isNew": false,
-        "isPopular": false
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
     },
     {
         "name": "Chinese 151 Surprise 151C Slim Box",
@@ -45,6 +55,8 @@
         "cost": 120,
         "stock": 3,
         "isNew": false,
-        "isPopular": false
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
     }
 ]
