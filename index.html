@@ -15,7 +15,6 @@
 
     <!-- Navigation Tabs -->
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
-        <!-- 🎨 FIX: Changed to "Pokemon" -->
         <button id="tab-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
         <button id="tab-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700">Accessories</button>
     </div>
@@ -136,16 +135,32 @@
                 inventoryContainer.innerHTML = '';
 
                 function createAccessoryHTML(item, index) {
-                    const imageSrc = `${item.image}?v=${cacheBuster}`;
+                    let imageSrc = `${item.image}?v=${cacheBuster}`;
+                    
+                    // 🎨 SMART FIX: Auto-default to the first variant image (Black) if it exists
+                    if (item.variants && item.variants.length > 0) {
+                        imageSrc = `${item.variants[0].image}?v=${cacheBuster}`;
+                    }
+                    
                     const displayCost = Number.isInteger(item.cost) ? item.cost : item.cost.toFixed(2);
                     let rightSideHTML = '';
                     
                     if (item.variants && item.variants.length > 0) {
-                        let dotsHTML = item.variants.map(v => {
-                            return `<button onclick="document.getElementById('acc-img-${index}').src='${v.image}?v=${cacheBuster}'" class="w-4 h-4 rounded-full border border-zinc-300 shadow-sm transition-transform hover:scale-125 focus:ring-2 focus:ring-zinc-400 focus:outline-none" style="background-color: ${v.color};" title="Swap Color"></button>`;
+                        let dotsHTML = item.variants.map((v, vIndex) => {
+                            // First dot is highlighted by default
+                            const isActive = vIndex === 0 
+                                ? 'ring-2 ring-offset-1 ring-zinc-800 scale-110 opacity-100' 
+                                : 'scale-90 opacity-70 border border-zinc-300';
+                                
+                            return `<button 
+                                onclick="selectVariant('${index}', ${vIndex}, '${v.image}?v=${cacheBuster}')" 
+                                id="btn-${index}-${vIndex}"
+                                class="variant-btn-${index} w-6 h-6 rounded-full shadow-sm transition-all duration-300 focus:outline-none ${isActive}" 
+                                style="background-color: ${v.color};" 
+                                title="Swap Color"></button>`;
                         }).join('');
 
-                        rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-1.5 justify-center max-w-[80px]">${dotsHTML}</div>`;
+                        rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-1.5 justify-center w-full">${dotsHTML}</div>`;
                     } else {
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Status</span><span class="text-sm font-black text-emerald-600 leading-tight mt-1 text-center">Available</span>`;
                     }
@@ -186,6 +201,24 @@
             } catch (error) {
                 inventoryContainer.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Accessories inventory.</p>`;
             }
+        }
+
+        // 🎨 UI FUNCTION: HIGHLIGHT ACTIVE COLOR DOT
+        function selectVariant(itemIndex, variantIndex, newImageSrc) {
+            // Swap the main image
+            document.getElementById(`acc-img-${itemIndex}`).src = newImageSrc;
+            
+            // Reset all dots for this specific item back to small/faded
+            const buttons = document.querySelectorAll(`.variant-btn-${itemIndex}`);
+            buttons.forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
+                btn.classList.add('scale-90', 'opacity-70', 'border', 'border-zinc-300');
+            });
+            
+            // Pop out the clicked dot and add a ring
+            const activeBtn = document.getElementById(`btn-${itemIndex}-${variantIndex}`);
+            activeBtn.classList.remove('scale-90', 'opacity-70', 'border', 'border-zinc-300');
+            activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
         }
 
         // 🚨 DISCORD SILENT ALARM 🚨
