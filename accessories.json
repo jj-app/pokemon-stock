@@ -10,14 +10,14 @@
         "image": "images/accessories/collector-4-pocket/collector-4-pocket.webp",
         "cost": 25,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/collector-4-pocket/collector-4-pocket-black.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/collector-4-pocket/collector-4-pocket-blue.webp" },
+            { "color": "#2d2d2d", "image": "images/accessories/collector-4-pocket/collector-4-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/collector-4-pocket/collector-4-pocket-blue.webp" },
             { "color": "#22c55e", "image": "images/accessories/collector-4-pocket/collector-4-pocket-green.webp" },
-            { "color": "#f472b6", "image": "images/accessories/collector-4-pocket/collector-4-pocket-pink.webp" },
-            { "color": "#a855f7", "image": "images/accessories/collector-4-pocket/collector-4-pocket-purple.webp" },
-            { "color": "#ef4444", "image": "images/accessories/collector-4-pocket/collector-4-pocket-red.webp" },
-            { "color": "#06b6d4", "image": "images/accessories/collector-4-pocket/collector-4-pocket-turquoise.webp" },
-            { "color": "#eab308", "image": "images/accessories/collector-4-pocket/collector-4-pocket-yellow.webp" }
+            { "color": "#e89fa1", "image": "images/accessories/collector-4-pocket/collector-4-pocket-pink.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/collector-4-pocket/collector-4-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/collector-4-pocket/collector-4-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/collector-4-pocket/collector-4-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/collector-4-pocket/collector-4-pocket-yellow.webp" }
         ]
     },
     {
@@ -25,14 +25,14 @@
         "image": "images/accessories/collector-9-pocket/collector-9-pocket.webp",
         "cost": 30,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/collector-9-pocket/collector-9-pocket-black.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/collector-9-pocket/collector-9-pocket-blue.webp" },
+            { "color": "#2d2d2d", "image": "images/accessories/collector-9-pocket/collector-9-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/collector-9-pocket/collector-9-pocket-blue.webp" },
             { "color": "#22c55e", "image": "images/accessories/collector-9-pocket/collector-9-pocket-green.webp" },
-            { "color": "#f472b6", "image": "images/accessories/collector-9-pocket/collector-9-pocket-pink.webp" },
-            { "color": "#a855f7", "image": "images/accessories/collector-9-pocket/collector-9-pocket-purple.webp" },
-            { "color": "#ef4444", "image": "images/accessories/collector-9-pocket/collector-9-pocket-red.webp" },
-            { "color": "#06b6d4", "image": "images/accessories/collector-9-pocket/collector-9-pocket-turquoise.webp" },
-            { "color": "#eab308", "image": "images/accessories/collector-9-pocket/collector-9-pocket-yellow.webp" }
+            { "color": "#e89fa1", "image": "images/accessories/collector-9-pocket/collector-9-pocket-pink.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/collector-9-pocket/collector-9-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/collector-9-pocket/collector-9-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/collector-9-pocket/collector-9-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/collector-9-pocket/collector-9-pocket-yellow.webp" }
         ]
     },
     {
@@ -40,14 +40,14 @@
         "image": "images/accessories/collector-12-pocket/collector-12-pocket.webp",
         "cost": 35,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/collector-12-pocket/collector-12-pocket-black.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/collector-12-pocket/collector-12-pocket-blue.webp" },
+            { "color": "#2d2d2d", "image": "images/accessories/collector-12-pocket/collector-12-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/collector-12-pocket/collector-12-pocket-blue.webp" },
             { "color": "#22c55e", "image": "images/accessories/collector-12-pocket/collector-12-pocket-green.webp" },
-            { "color": "#f472b6", "image": "images/accessories/collector-12-pocket/collector-12-pocket-pink.webp" },
-            { "color": "#a855f7", "image": "images/accessories/collector-12-pocket/collector-12-pocket-purple.webp" },
-            { "color": "#ef4444", "image": "images/accessories/collector-12-pocket/collector-12-pocket-red.webp" },
-            { "color": "#06b6d4", "image": "images/accessories/collector-12-pocket/collector-12-pocket-turquoise.webp" },
-            { "color": "#eab308", "image": "images/accessories/collector-12-pocket/collector-12-pocket-yellow.webp" }
+            { "color": "#e89fa1", "image": "images/accessories/collector-12-pocket/collector-12-pocket-pink.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/collector-12-pocket/collector-12-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/collector-12-pocket/collector-12-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/collector-12-pocket/collector-12-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/collector-12-pocket/collector-12-pocket-yellow.webp" }
         ]
     },
     {
@@ -55,14 +55,13 @@
         "image": "images/accessories/stealth-9-pocket/stealth-9-pocket.webp",
         "cost": 28,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-black.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-blue.webp" },
-            { "color": "#22c55e", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-green.webp" },
-            { "color": "#f472b6", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-pink.webp" },
-            { "color": "#a855f7", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-purple.webp" },
-            { "color": "#ef4444", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-red.webp" },
-            { "color": "#06b6d4", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-turquoise.webp" },
-            { "color": "#eab308", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-yellow.webp" }
+            { "color": "#2d2d2d", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-blue.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-pink.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-yellow.webp" }
         ]
     },
     {
@@ -70,14 +69,13 @@
         "image": "images/accessories/stealth-12-pocket/stealth-12-pocket.webp",
         "cost": 30,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-black.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-blue.webp" },
-            { "color": "#22c55e", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-green.webp" },
-            { "color": "#f472b6", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-pink.webp" },
-            { "color": "#a855f7", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-purple.webp" },
-            { "color": "#ef4444", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-red.webp" },
-            { "color": "#06b6d4", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-turquoise.webp" },
-            { "color": "#eab308", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-yellow.webp" }
+            { "color": "#2d2d2d", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-blue.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-pink.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-yellow.webp" }
         ]
     },
     {
