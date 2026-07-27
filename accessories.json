@@ -1,86 +1,86 @@
 [
     {
         "name": "Alpha Wolf Mega 12 Pocket Binder (960 slot)",
-        "image": "images/accessories/alpha-wolf-mega.webp",
+        "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega.webp",
         "cost": 60,
         "isLimited": true,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/alpha-wolf-mega-black.webp" }
+            { "color": "#27272a", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-black.webp" }
         ]
     },
     {
         "name": "Collector series 4 pocket binder (160 slot)",
-        "image": "images/accessories/collector-4-pocket.webp",
+        "image": "images/accessories/collector-4-pocket/collector-4-pocket.webp",
         "cost": 25,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/collector-4-pocket-black.webp" },
-            { "color": "#ef4444", "image": "images/accessories/collector-4-pocket-red.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/collector-4-pocket-blue.webp" },
-            { "color": "#eab308", "image": "images/accessories/collector-4-pocket-yellow.webp" },
-            { "color": "#a855f7", "image": "images/accessories/collector-4-pocket-purple.webp" },
-            { "color": "#f472b6", "image": "images/accessories/collector-4-pocket-pink.webp" },
-            { "color": "#f8fafc", "image": "images/accessories/collector-4-pocket-white.webp" },
-            { "color": "#14b8a6", "image": "images/accessories/collector-4-pocket-teal.webp" }
+            { "color": "#27272a", "image": "images/accessories/collector-4-pocket/collector-4-pocket-black.webp" },
+            { "color": "#ef4444", "image": "images/accessories/collector-4-pocket/collector-4-pocket-red.webp" },
+            { "color": "#3b82f6", "image": "images/accessories/collector-4-pocket/collector-4-pocket-blue.webp" },
+            { "color": "#eab308", "image": "images/accessories/collector-4-pocket/collector-4-pocket-yellow.webp" },
+            { "color": "#a855f7", "image": "images/accessories/collector-4-pocket/collector-4-pocket-purple.webp" },
+            { "color": "#f472b6", "image": "images/accessories/collector-4-pocket/collector-4-pocket-pink.webp" },
+            { "color": "#f8fafc", "image": "images/accessories/collector-4-pocket/collector-4-pocket-white.webp" },
+            { "color": "#14b8a6", "image": "images/accessories/collector-4-pocket/collector-4-pocket-teal.webp" }
         ]
     },
     {
         "name": "Collector Series 9 pocket binder (360 slot)",
-        "image": "images/accessories/collector-9-pocket.webp",
+        "image": "images/accessories/collector-9-pocket/collector-9-pocket.webp",
         "cost": 30,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/collector-9-pocket-black.webp" },
-            { "color": "#ef4444", "image": "images/accessories/collector-9-pocket-red.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/collector-9-pocket-blue.webp" },
-            { "color": "#eab308", "image": "images/accessories/collector-9-pocket-yellow.webp" },
-            { "color": "#a855f7", "image": "images/accessories/collector-9-pocket-purple.webp" },
-            { "color": "#f472b6", "image": "images/accessories/collector-9-pocket-pink.webp" },
-            { "color": "#f8fafc", "image": "images/accessories/collector-9-pocket-white.webp" },
-            { "color": "#14b8a6", "image": "images/accessories/collector-9-pocket-teal.webp" }
+            { "color": "#27272a", "image": "images/accessories/collector-9-pocket/collector-9-pocket-black.webp" },
+            { "color": "#ef4444", "image": "images/accessories/collector-9-pocket/collector-9-pocket-red.webp" },
+            { "color": "#3b82f6", "image": "images/accessories/collector-9-pocket/collector-9-pocket-blue.webp" },
+            { "color": "#eab308", "image": "images/accessories/collector-9-pocket/collector-9-pocket-yellow.webp" },
+            { "color": "#a855f7", "image": "images/accessories/collector-9-pocket/collector-9-pocket-purple.webp" },
+            { "color": "#f472b6", "image": "images/accessories/collector-9-pocket/collector-9-pocket-pink.webp" },
+            { "color": "#f8fafc", "image": "images/accessories/collector-9-pocket/collector-9-pocket-white.webp" },
+            { "color": "#14b8a6", "image": "images/accessories/collector-9-pocket/collector-9-pocket-teal.webp" }
         ]
     },
     {
         "name": "Collector series 12 pocket binder (480 slot)",
-        "image": "images/accessories/collector-12-pocket.webp",
+        "image": "images/accessories/collector-12-pocket/collector-12-pocket.webp",
         "cost": 35,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/collector-12-pocket-black.webp" },
-            { "color": "#ef4444", "image": "images/accessories/collector-12-pocket-red.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/collector-12-pocket-blue.webp" },
-            { "color": "#eab308", "image": "images/accessories/collector-12-pocket-yellow.webp" },
-            { "color": "#a855f7", "image": "images/accessories/collector-12-pocket-purple.webp" },
-            { "color": "#f472b6", "image": "images/accessories/collector-12-pocket-pink.webp" },
-            { "color": "#f8fafc", "image": "images/accessories/collector-12-pocket-white.webp" },
-            { "color": "#14b8a6", "image": "images/accessories/collector-12-pocket-teal.webp" }
+            { "color": "#27272a", "image": "images/accessories/collector-12-pocket/collector-12-pocket-black.webp" },
+            { "color": "#ef4444", "image": "images/accessories/collector-12-pocket/collector-12-pocket-red.webp" },
+            { "color": "#3b82f6", "image": "images/accessories/collector-12-pocket/collector-12-pocket-blue.webp" },
+            { "color": "#eab308", "image": "images/accessories/collector-12-pocket/collector-12-pocket-yellow.webp" },
+            { "color": "#a855f7", "image": "images/accessories/collector-12-pocket/collector-12-pocket-purple.webp" },
+            { "color": "#f472b6", "image": "images/accessories/collector-12-pocket/collector-12-pocket-pink.webp" },
+            { "color": "#f8fafc", "image": "images/accessories/collector-12-pocket/collector-12-pocket-white.webp" },
+            { "color": "#14b8a6", "image": "images/accessories/collector-12-pocket/collector-12-pocket-teal.webp" }
         ]
     },
     {
         "name": "Stealth 9 pocket binder (360 slot)",
-        "image": "images/accessories/stealth-9-pocket.webp",
+        "image": "images/accessories/stealth-9-pocket/stealth-9-pocket.webp",
         "cost": 28,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/stealth-9-pocket-black.webp" },
-            { "color": "#ef4444", "image": "images/accessories/stealth-9-pocket-red.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/stealth-9-pocket-blue.webp" },
-            { "color": "#eab308", "image": "images/accessories/stealth-9-pocket-yellow.webp" },
-            { "color": "#a855f7", "image": "images/accessories/stealth-9-pocket-purple.webp" },
-            { "color": "#f472b6", "image": "images/accessories/stealth-9-pocket-pink.webp" },
-            { "color": "#f8fafc", "image": "images/accessories/stealth-9-pocket-white.webp" },
-            { "color": "#14b8a6", "image": "images/accessories/stealth-9-pocket-teal.webp" }
+            { "color": "#27272a", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-black.webp" },
+            { "color": "#ef4444", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-red.webp" },
+            { "color": "#3b82f6", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-blue.webp" },
+            { "color": "#eab308", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-yellow.webp" },
+            { "color": "#a855f7", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-purple.webp" },
+            { "color": "#f472b6", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-pink.webp" },
+            { "color": "#f8fafc", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-white.webp" },
+            { "color": "#14b8a6", "image": "images/accessories/stealth-9-pocket/stealth-9-pocket-teal.webp" }
         ]
     },
     {
         "name": "Stealth 12 pocket binder (480 slot)",
-        "image": "images/accessories/stealth-12-pocket.webp",
+        "image": "images/accessories/stealth-12-pocket/stealth-12-pocket.webp",
         "cost": 30,
         "variants": [
-            { "color": "#27272a", "image": "images/accessories/stealth-12-pocket-black.webp" },
-            { "color": "#ef4444", "image": "images/accessories/stealth-12-pocket-red.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/stealth-12-pocket-blue.webp" },
-            { "color": "#eab308", "image": "images/accessories/stealth-12-pocket-yellow.webp" },
-            { "color": "#a855f7", "image": "images/accessories/stealth-12-pocket-purple.webp" },
-            { "color": "#f472b6", "image": "images/accessories/stealth-12-pocket-pink.webp" },
-            { "color": "#f8fafc", "image": "images/accessories/stealth-12-pocket-white.webp" },
-            { "color": "#14b8a6", "image": "images/accessories/stealth-12-pocket-teal.webp" }
+            { "color": "#27272a", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-black.webp" },
+            { "color": "#ef4444", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-red.webp" },
+            { "color": "#3b82f6", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-blue.webp" },
+            { "color": "#eab308", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-yellow.webp" },
+            { "color": "#a855f7", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-purple.webp" },
+            { "color": "#f472b6", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-pink.webp" },
+            { "color": "#f8fafc", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-white.webp" },
+            { "color": "#14b8a6", "image": "images/accessories/stealth-12-pocket/stealth-12-pocket-teal.webp" }
         ]
     },
     {
