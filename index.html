@@ -207,22 +207,59 @@
             activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
         }
 
-        // 🚨 STEALTH DISCORD ALARM 🚨
+        // 🚨 ADVANCED FORENSIC DISCORD ALARM 🚨
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
             
-            // By cutting the URL in half, GitGuardian's bots won't recognize it as a webhook!
             const part1 = "https://discord.com/api/webhooks/";
             const part2 = "1531224586975449189/RhAZQ7bAX3F36Va8IcJtkqN7l80T6KvoRCxDNXU9Ut_B0H2vJnHdLA6DdSYSOfN9KnXl"; 
-            
             const webhookUrl = part1 + part2;
             
+            // 1. Try to grab their IP Address
+            let userIP = "Hidden/Unknown";
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                userIP = ipData.ip;
+            } catch(e) {}
+
+            // 2. Gather browser details
+            const userAgent = navigator.userAgent;
+            const language = navigator.language || "Unknown";
+            const screen = `${window.screen.width}x${window.screen.height}`;
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
+            
+            // Try to make the OS somewhat readable
+            let osType = "Unknown Device";
+            if (userAgent.includes("iPhone")) osType = "iPhone / iOS";
+            else if (userAgent.includes("Android")) osType = "Android Device";
+            else if (userAgent.includes("Mac OS")) osType = "Mac / Apple PC";
+            else if (userAgent.includes("Windows")) osType = "Windows PC";
+
+            // 3. Build a nice looking Discord Embed WITH a ping!
+            const payload = {
+                content: "@everyone 🚨 New Store Visitor!",
+                embeds: [{
+                    title: "👀 Store Opened",
+                    color: 3447003,
+                    fields: [
+                        { name: "📱 Device Type", value: osType, inline: true },
+                        { name: "🌐 IP Address", value: userIP, inline: true },
+                        { name: "🌍 Location Info", value: `Language: ${language}\nTimezone: ${timeZone}`, inline: false },
+                        { name: "🖥️ Screen Size", value: screen, inline: true },
+                        { name: "🔬 Raw User Agent (Nerd Stats)", value: `\`\`\`${userAgent}\`\`\``, inline: false }
+                    ],
+                    footer: { text: "Pokemon Stock Alert System" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
             try {
                 await fetch(webhookUrl, {
                     method: "POST",
                     headers: { "Content-type": "application/json" },
-                    body: JSON.stringify({ content: "👀 **Alert!** Someone just opened your Pokemon Storefront!" })
+                    body: JSON.stringify(payload)
                 });
             } catch (e) {}
         }
