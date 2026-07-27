@@ -1,7 +1,7 @@
 [
     {
         "name": "Chinese Gem Vol 6 CBB6C Slim Box",
-        "image": "images/chinese-gem-vol-6-CBB6C-slim-box.webp",
+        "image": "images/pokemon/chinese-gem-vol-6-CBB6C-slim-box.webp",
         "cost": 65,
         "stock": 0,
         "isNew": true,
@@ -11,7 +11,7 @@
     },
     {
         "name": "Chinese Chasing Glory Together CSV10C Slim Box",
-        "image": "images/chinese-chasing-glory-together-CSV10C-slim-box.webp",
+        "image": "images/pokemon/chinese-chasing-glory-together-CSV10C-slim-box.webp",
         "cost": 65,
         "stock": 3,
         "isNew": true,
@@ -21,7 +21,7 @@
     },
     {
         "name": "Chinese Terastal Gathering CSV9.5C Slim Box",
-        "image": "images/chinese-terastal-gathering-CSV9.5C-slim-box.webp",
+        "image": "images/pokemon/chinese-terastal-gathering-CSV9.5C-slim-box.webp",
         "cost": 130,
         "stock": 4,
         "isNew": true,
@@ -31,7 +31,7 @@
     },
     {
         "name": "Chinese Gem Vol 5 CBB5C Slim Box",
-        "image": "images/chinese-gem-vol-5-CBB5C-slim-box.webp",
+        "image": "images/pokemon/chinese-gem-vol-5-CBB5C-slim-box.webp",
         "cost": 75,
         "stock": 0,
         "isNew": false,
@@ -41,7 +41,7 @@
     },
     {
         "name": "Chinese Gem Vol 4 CBB4C Slim Box",
-        "image": "images/chinese-gem-vol-4-CBB4C-slim-box.webp",
+        "image": "images/pokemon/chinese-gem-vol-4-CBB4C-slim-box.webp",
         "cost": 65,
         "stock": 17,
         "isNew": false,
@@ -51,7 +51,7 @@
     },
     {
         "name": "Chinese Gem Vol 3 CBB3C Slim Box",
-        "image": "images/chinese-gem-vol-3-CBB3C-slim-box.webp",
+        "image": "images/pokemon/chinese-gem-vol-3-CBB3C-slim-box.webp",
         "cost": 90,
         "stock": 0,
         "isNew": false,
@@ -61,7 +61,7 @@
     },
     {
         "name": "Chinese 151 Surprise 151C Slim Box",
-        "image": "images/chinese-151-suprise-151C-slim-box.webp",
+        "image": "images/pokemon/chinese-151-suprise-151C-slim-box.webp",
         "cost": 120,
         "stock": 3,
         "isNew": false,
