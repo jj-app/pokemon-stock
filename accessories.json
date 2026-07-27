@@ -45,7 +45,7 @@
         ]
     },
     {
-        "name": "Stealth 9 pocket",
+        "name": "Stealth 9 pocket binder (360 slot)",
         "image": "images/accessories/stealth-9-pocket.webp",
         "cost": 28,
         "variants": [
@@ -60,7 +60,7 @@
         ]
     },
     {
-        "name": "Stealth 12",
+        "name": "Stealth 12 pocket binder (480 slot)",
         "image": "images/accessories/stealth-12-pocket.webp",
         "cost": 30,
         "variants": [
