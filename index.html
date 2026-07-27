@@ -139,6 +139,12 @@
                     
                     if (item.variants && item.variants.length > 0) {
                         imageSrc = `${item.variants[0].image}?v=${cacheBuster}`;
+                        
+                        // ⚡ SPEED BOOST: Preload variant images so they swap instantly!
+                        item.variants.forEach(v => {
+                            const preloadImg = new Image();
+                            preloadImg.src = `${v.image}?v=${cacheBuster}`;
+                        });
                     }
                     
                     const displayCost = Number.isInteger(item.cost) ? item.cost : item.cost.toFixed(2);
@@ -146,7 +152,6 @@
                     
                     if (item.variants && item.variants.length > 0) {
                         let dotsHTML = item.variants.map((v, vIndex) => {
-                            // First dot is highlighted by default
                             const isActive = vIndex === 0 
                                 ? 'ring-2 ring-offset-1 ring-zinc-800 scale-110 opacity-100' 
                                 : 'scale-90 opacity-70 border border-zinc-300';
@@ -159,7 +164,6 @@
                                 title="Swap Color"></button>`;
                         }).join('');
 
-                        // Changed max-width and layout to handle bigger buttons nicely
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-2 justify-center w-full">${dotsHTML}</div>`;
                     } else {
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Status</span><span class="text-sm font-black text-emerald-600 leading-tight mt-1 text-center">Available</span>`;
