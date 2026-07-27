@@ -1,19 +1,9 @@
 [
     {
         "name": "Alpha Wolf Mega 12 Pocket Binder (960 slot)",
-        "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega.webp",
+        "image": "images/accessories/alpha-wolf-mega.webp",
         "cost": 60,
-        "isLimited": true,
-        "variants": [
-            { "color": "#27272a", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-black.webp" },
-            { "color": "#3b82f6", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-blue.webp" },
-            { "color": "#22c55e", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-green.webp" },
-            { "color": "#f472b6", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-pink.webp" },
-            { "color": "#a855f7", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-purple.webp" },
-            { "color": "#ef4444", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-red.webp" },
-            { "color": "#06b6d4", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-turquoise.webp" },
-            { "color": "#eab308", "image": "images/accessories/alpha-wolf-mega/alpha-wolf-mega-yellow.webp" }
-        ]
+        "isLimited": true
     },
     {
         "name": "Collector series 4 pocket binder (160 slot)",
