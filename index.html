@@ -8,45 +8,47 @@
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
-    <!-- Header -->
     <div class="max-w-md mx-auto pt-2 pb-4 text-center">
         <h1 class="text-2xl font-black text-zinc-800 tracking-tight">Pokemon Stock</h1>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
-        <button id="tab-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
-        <button id="tab-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700">Accessories</button>
+        <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
+        <button id="tab-btn-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Accessories</button>
     </div>
 
-    <!-- Inventory Container -->
-    <div class="max-w-md mx-auto w-full space-y-3.5" id="inventory-list"></div>
+    <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"></div>
+    
+    <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"></div>
 
     <script>
-        const inventoryContainer = document.getElementById('inventory-list');
-        const tabSealed = document.getElementById('tab-sealed');
-        const tabAccessories = document.getElementById('tab-accessories');
+        const bucketPokemon = document.getElementById('bucket-pokemon');
+        const bucketAccessories = document.getElementById('bucket-accessories');
+        const tabBtnSealed = document.getElementById('tab-btn-sealed');
+        const tabBtnAccessories = document.getElementById('tab-btn-accessories');
         let currentTab = 'sealed';
 
+        // ⚡ INSTANT TAB SWITCHER
         function switchTab(tabName) {
             if (currentTab === tabName) return;
             currentTab = tabName;
 
             if (tabName === 'sealed') {
-                tabSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
-                tabAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
-                loadSealedInventory();
+                tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
+                tabBtnAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
+                bucketPokemon.classList.remove('hidden');
+                bucketAccessories.classList.add('hidden');
             } else {
-                tabAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
-                tabSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
-                loadAccessoriesInventory();
+                tabBtnAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
+                tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
+                bucketAccessories.classList.remove('hidden');
+                bucketPokemon.classList.add('hidden');
             }
         }
 
         // ⚙️ ENGINE 1: POKEMON
         async function loadSealedInventory() {
             try {
-                inventoryContainer.innerHTML = '<p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Loading inventory...</p>';
                 const cacheBuster = new Date().getTime();
                 const response = await fetch(`inventory.json?v=${cacheBuster}`);
                 const items = await response.json();
@@ -55,17 +57,20 @@
                 const inStock = items.filter(item => !item.isComingSoon && item.stock > 0);
                 const outOfStock = items.filter(item => !item.isComingSoon && item.stock === 0);
 
-                inventoryContainer.innerHTML = '';
+                let htmlPayload = '';
 
                 function createCardHTML(item, status) {
                     const isOutOfStock = status === 'out-of-stock';
                     const isComingSoon = status === 'coming-soon';
+                    const imageSrc = `${item.image}?v=${cacheBuster}`;
+
+                    const preloadImg = new Image();
+                    preloadImg.src = imageSrc;
 
                     const cardClass = isOutOfStock
                         ? "bg-white rounded-xl shadow-md border border-zinc-100 p-2.5 opacity-50 grayscale transition-all w-full animate-fade-in"
                         : "bg-white rounded-xl shadow-md border border-zinc-100 p-2.5 transition-all w-full animate-fade-in";
-
-                    const imageSrc = `${item.image}?v=${cacheBuster}`;
+                    
                     const displayCost = Number.isInteger(item.cost) ? item.cost : item.cost.toFixed(2);
 
                     let rightSideHTML = '';
@@ -96,26 +101,28 @@
                 }
 
                 if (comingSoon.length > 0) {
-                    inventoryContainer.innerHTML += `<div class="pt-2 pb-1 flex items-center justify-center w-full opacity-80"><div class="flex-1 h-px bg-blue-300"></div><span class="mx-4 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Coming Soon</span><div class="flex-1 h-px bg-blue-300"></div></div>`;
-                    comingSoon.forEach(item => inventoryContainer.innerHTML += createCardHTML(item, 'coming-soon'));
+                    htmlPayload += `<div class="pt-2 pb-1 flex items-center justify-center w-full opacity-80"><div class="flex-1 h-px bg-blue-300"></div><span class="mx-4 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Coming Soon</span><div class="flex-1 h-px bg-blue-300"></div></div>`;
+                    comingSoon.forEach(item => htmlPayload += createCardHTML(item, 'coming-soon'));
                 }
                 if (inStock.length > 0 && comingSoon.length > 0) {
-                    inventoryContainer.innerHTML += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Available Now</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
+                    htmlPayload += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Available Now</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
                 }
-                inStock.forEach(item => inventoryContainer.innerHTML += createCardHTML(item, 'in-stock'));
+                inStock.forEach(item => htmlPayload += createCardHTML(item, 'in-stock'));
                 if (outOfStock.length > 0) {
-                    inventoryContainer.innerHTML += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Out of Stock</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
-                    outOfStock.forEach(item => inventoryContainer.innerHTML += createCardHTML(item, 'out-of-stock'));
+                    htmlPayload += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Out of Stock</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
+                    outOfStock.forEach(item => htmlPayload += createCardHTML(item, 'out-of-stock'));
                 }
+                
+                bucketPokemon.innerHTML = htmlPayload;
+
             } catch (error) {
-                inventoryContainer.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Pokemon inventory.</p>`;
+                bucketPokemon.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Pokemon inventory.</p>`;
             }
         }
 
         // ⚙️ ENGINE 2: ACCESSORIES
         async function loadAccessoriesInventory() {
             try {
-                inventoryContainer.innerHTML = '<p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Loading accessories...</p>';
                 const cacheBuster = new Date().getTime();
                 const response = await fetch(`accessories.json?v=${cacheBuster}`);
                 const items = await response.json();
@@ -123,17 +130,21 @@
                 const limited = items.filter(item => item.isLimited);
                 const standard = items.filter(item => !item.isLimited);
 
-                inventoryContainer.innerHTML = '';
+                let htmlPayload = '';
 
                 function createAccessoryHTML(item, index) {
                     let imageSrc = `${item.image}?v=${cacheBuster}`;
                     
                     if (item.variants && item.variants.length > 0) {
                         imageSrc = `${item.variants[0].image}?v=${cacheBuster}`;
+                        
                         item.variants.forEach(v => {
                             const preloadImg = new Image();
                             preloadImg.src = `${v.image}?v=${cacheBuster}`;
                         });
+                    } else {
+                        const preloadImg = new Image();
+                        preloadImg.src = imageSrc;
                     }
                     
                     const displayCost = Number.isInteger(item.cost) ? item.cost : item.cost.toFixed(2);
@@ -178,18 +189,20 @@
                 }
 
                 if (limited.length > 0) {
-                    inventoryContainer.innerHTML += `<div class="pt-2 pb-1 flex items-center justify-center w-full opacity-90"><div class="flex-1 h-px bg-amber-400"></div><span class="mx-4 text-[10px] font-black text-amber-600 uppercase tracking-[0.2em]">Limited Edition</span><div class="flex-1 h-px bg-amber-400"></div></div>`;
-                    limited.forEach((item, index) => inventoryContainer.innerHTML += createAccessoryHTML(item, 'lim-' + index));
+                    htmlPayload += `<div class="pt-2 pb-1 flex items-center justify-center w-full opacity-90"><div class="flex-1 h-px bg-amber-400"></div><span class="mx-4 text-[10px] font-black text-amber-600 uppercase tracking-[0.2em]">Limited Edition</span><div class="flex-1 h-px bg-amber-400"></div></div>`;
+                    limited.forEach((item, index) => htmlPayload += createAccessoryHTML(item, 'lim-' + index));
                 }
 
                 if (standard.length > 0 && limited.length > 0) {
-                    inventoryContainer.innerHTML += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Standard Accessories</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
+                    htmlPayload += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Standard Accessories</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
                 }
 
-                standard.forEach((item, index) => inventoryContainer.innerHTML += createAccessoryHTML(item, 'std-' + index));
+                standard.forEach((item, index) => htmlPayload += createAccessoryHTML(item, 'std-' + index));
+                
+                bucketAccessories.innerHTML = htmlPayload;
 
             } catch (error) {
-                inventoryContainer.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Accessories inventory.</p>`;
+                bucketAccessories.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Accessories inventory.</p>`;
             }
         }
 
@@ -216,7 +229,6 @@
             const part2 = "1531224586975449189/RhAZQ7bAX3F36Va8IcJtkqN7l80T6KvoRCxDNXU9Ut_B0H2vJnHdLA6DdSYSOfN9KnXl"; 
             const webhookUrl = part1 + part2;
             
-            // 1. Try to grab their IP Address
             let userIP = "Hidden/Unknown";
             try {
                 const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -224,20 +236,17 @@
                 userIP = ipData.ip;
             } catch(e) {}
 
-            // 2. Gather browser details
             const userAgent = navigator.userAgent;
             const language = navigator.language || "Unknown";
             const screen = `${window.screen.width}x${window.screen.height}`;
             const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
             
-            // Try to make the OS somewhat readable
             let osType = "Unknown Device";
             if (userAgent.includes("iPhone")) osType = "iPhone / iOS";
             else if (userAgent.includes("Android")) osType = "Android Device";
             else if (userAgent.includes("Mac OS")) osType = "Mac / Apple PC";
             else if (userAgent.includes("Windows")) osType = "Windows PC";
 
-            // 3. Build a nice looking Discord Embed WITH a ping!
             const payload = {
                 content: "@everyone 🚨 New Store Visitor!",
                 embeds: [{
@@ -248,7 +257,7 @@
                         { name: "🌐 IP Address", value: userIP, inline: true },
                         { name: "🌍 Location Info", value: `Language: ${language}\nTimezone: ${timeZone}`, inline: false },
                         { name: "🖥️ Screen Size", value: screen, inline: true },
-                        { name: "🔬 Raw User Agent (Nerd Stats)", value: `\`\`\`${userAgent}\`\`\``, inline: false }
+                        { name: "🔬 Raw User Agent", value: `\`\`\`${userAgent}\`\`\``, inline: false }
                     ],
                     footer: { text: "Pokemon Stock Alert System" },
                     timestamp: new Date().toISOString()
@@ -264,10 +273,12 @@
             } catch (e) {}
         }
 
+        // Add Simple Animations
         document.head.insertAdjacentHTML("beforeend", `<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }</style>`);
 
-        // Initialize App
+        // 🚀 INITIALIZE ALL ENGINES SIMULTANEOUSLY ON LOAD
         loadSealedInventory();
+        loadAccessoriesInventory();
         fireDiscordAlert();
     </script>
 </body>
