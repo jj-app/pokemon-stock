@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Standard Penny Sleeves (100ct)",
+        "image": "images/accessories/penny-sleeves.webp",
+        "cost": 3
+    },
+    {
+        "name": "Premium Toploaders (25ct)",
+        "image": "images/accessories/toploaders.webp",
+        "cost": 5
+    },
+    {
+        "name": "Semi-Rigid Card Holders (50ct)",
+        "image": "images/accessories/semi-rigids.webp",
+        "cost": 15
+    },
+    {
+        "name": "Premium 9-Pocket Zip Binder",
+        "image": "images/accessories/binder-black.webp",
+        "cost": 40,
+        "variants": [
+            { "color": "#27272a", "image": "images/accessories/binder-black.webp" },
+            { "color": "#ef4444", "image": "images/accessories/binder-red.webp" },
+            { "color": "#3b82f6", "image": "images/accessories/binder-blue.webp" },
+            { "color": "#eab308", "image": "images/accessories/binder-yellow.webp" },
+            { "color": "#a855f7", "image": "images/accessories/binder-purple.webp" },
+            { "color": "#f472b6", "image": "images/accessories/binder-pink.webp" },
+            { "color": "#f8fafc", "image": "images/accessories/binder-white.webp" },
+            { "color": "#14b8a6", "image": "images/accessories/binder-teal.webp" }
+        ]
+    }
+]
