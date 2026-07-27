@@ -1,5 +1,14 @@
 [
     {
+        "name": "Alpha Wolf Mega 12 Pocket Binder (960 slot)",
+        "image": "images/accessories/alpha-wolf-mega.webp",
+        "cost": 60,
+        "isLimited": true,
+        "variants": [
+            { "color": "#27272a", "image": "images/accessories/alpha-wolf-mega-black.webp" }
+        ]
+    },
+    {
         "name": "Collector series 4 pocket binder (160 slot)",
         "image": "images/accessories/collector-4-pocket.webp",
         "cost": 25,
@@ -78,6 +87,11 @@
         "name": "Soft Sleeves 100pc",
         "image": "images/accessories/soft-sleeves.webp",
         "cost": 1.50
+    },
+    {
+        "name": "Top Loaders 25pc",
+        "image": "images/accessories/top-loaders.webp",
+        "cost": 4
     },
     {
         "name": "Semi rigids 50pc",
