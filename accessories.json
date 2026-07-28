@@ -53,7 +53,7 @@
     {
         "name": "Top Loader Binder - 4 pocket (128 slot)",
         "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket.webp",
-        "cost": 30,
+        "cost": 28,
         "variants": [
             { "color": "#2d2d2d", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-black.webp" },
             { "color": "#0072bc", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-blue.webp" },
@@ -68,7 +68,7 @@
     {
         "name": "Top Loader Binder - 9 pocket (216 slot)",
         "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket.webp",
-        "cost": 40,
+        "cost": 39,
         "variants": [
             { "color": "#2d2d2d", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-black.webp" },
             { "color": "#0072bc", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-blue.webp" },
