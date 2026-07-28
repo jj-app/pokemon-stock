@@ -6,7 +6,7 @@
         "isLimited": true
     },
     {
-        "name": "Collector series 4 pocket binder (160 slot)",
+        "name": "Collector Binder - 4 pocket (160 slot)",
         "image": "images/accessories/collector-4-pocket/collector-4-pocket.webp",
         "cost": 25,
         "variants": [
@@ -21,7 +21,7 @@
         ]
     },
     {
-        "name": "Collector Series 9 pocket binder (360 slot)",
+        "name": "Collector Binder - 9 pocket (360 slot)",
         "image": "images/accessories/collector-9-pocket/collector-9-pocket.webp",
         "cost": 30,
         "variants": [
@@ -36,7 +36,7 @@
         ]
     },
     {
-        "name": "Collector series 12 pocket binder (480 slot)",
+        "name": "Collector Binder - 12 pocket (480 slot)",
         "image": "images/accessories/collector-12-pocket/collector-12-pocket.webp",
         "cost": 35,
         "variants": [
@@ -51,7 +51,37 @@
         ]
     },
     {
-        "name": "Stealth 9 pocket binder (360 slot)",
+        "name": "Top Loader Binder - 4 pocket (128 slot)",
+        "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket.webp",
+        "cost": 30,
+        "variants": [
+            { "color": "#2d2d2d", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-blue.webp" },
+            { "color": "#22c55e", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-green.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-pink.webp" },
+            { "color": "#6547a0", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/top-loader-4-pocket/top-loader-4-pocket-yellow.webp" }
+        ]
+    },
+    {
+        "name": "Top Loader Binder - 9 pocket (216 slot)",
+        "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket.webp",
+        "cost": 40,
+        "variants": [
+            { "color": "#2d2d2d", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-black.webp" },
+            { "color": "#0072bc", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-blue.webp" },
+            { "color": "#22c55e", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-green.webp" },
+            { "color": "#e89fa1", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-pink.webp" },
+            { "color": "#6547a0", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-purple.webp" },
+            { "color": "#ed1941", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-red.webp" },
+            { "color": "#76e5cf", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-turquoise.webp" },
+            { "color": "#ffde17", "image": "images/accessories/top-loader-9-pocket/top-loader-9-pocket-yellow.webp" }
+        ]
+    },
+    {
+        "name": "Stealth Binder - 9 pocket (360 slot)",
         "image": "images/accessories/stealth-9-pocket/stealth-9-pocket.webp",
         "cost": 28,
         "variants": [
@@ -65,7 +95,7 @@
         ]
     },
     {
-        "name": "Stealth 12 pocket binder (480 slot)",
+        "name": "Stealth Binder - 12 pocket (480 slot)",
         "image": "images/accessories/stealth-12-pocket/stealth-12-pocket.webp",
         "cost": 30,
         "variants": [
