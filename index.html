@@ -10,31 +10,23 @@
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
-    <!-- Header -->
     <div class="max-w-md mx-auto pt-2 pb-4 text-center">
         <h1 class="text-2xl font-black text-zinc-800 tracking-tight">Pokemon Stock</h1>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
         <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
         <button id="tab-btn-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Accessories</button>
         <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Tracking</button>
     </div>
 
-    <!-- Bucket A: Pokemon -->
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"></div>
-    
-    <!-- Bucket B: Accessories -->
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"></div>
-
-    <!-- Bucket C: Tracking -->
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-tracking">
         <p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Checking incoming shipments...</p>
     </div>
 
     <script>
-        // --- FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyAHD0_l3t-aTEdlE_28Bspluk7KpL2GAbw",
             authDomain: "order-tracker-58390.firebaseapp.com",
@@ -46,7 +38,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // --- TAB LOGIC ---
         const bucketPokemon = document.getElementById('bucket-pokemon');
         const bucketAccessories = document.getElementById('bucket-accessories');
         const bucketTracking = document.getElementById('bucket-tracking');
@@ -80,7 +71,6 @@
             }
         }
 
-        // ⚙️ ENGINE 1: POKEMON
         async function loadSealedInventory() {
             try {
                 const cacheBuster = new Date().getTime();
@@ -97,8 +87,7 @@
                     const isOutOfStock = status === 'out-of-stock';
                     const isComingSoon = status === 'coming-soon';
                     const imageSrc = `${item.image}?v=${cacheBuster}`;
-                    const preloadImg = new Image(); preloadImg.src = imageSrc;
-
+                    
                     const cardClass = isOutOfStock
                         ? "bg-white rounded-xl shadow-md border border-zinc-100 p-2.5 opacity-50 grayscale transition-all w-full animate-fade-in"
                         : "bg-white rounded-xl shadow-md border border-zinc-100 p-2.5 transition-all w-full animate-fade-in";
@@ -148,7 +137,6 @@
             } catch (error) { bucketPokemon.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Pokemon inventory.</p>`; }
         }
 
-        // ⚙️ ENGINE 2: ACCESSORIES
         async function loadAccessoriesInventory() {
             try {
                 const cacheBuster = new Date().getTime();
@@ -164,9 +152,6 @@
                     let imageSrc = `${item.image}?v=${cacheBuster}`;
                     if (item.variants && item.variants.length > 0) {
                         imageSrc = `${item.variants[0].image}?v=${cacheBuster}`;
-                        item.variants.forEach(v => { const preloadImg = new Image(); preloadImg.src = `${v.image}?v=${cacheBuster}`; });
-                    } else {
-                        const preloadImg = new Image(); preloadImg.src = imageSrc;
                     }
                     
                     const displayCost = Number.isInteger(item.cost) ? item.cost : item.cost.toFixed(2);
@@ -225,7 +210,6 @@
             activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
         }
 
-        // ⚙️ ENGINE 3: TRACKING (CLEANED UP & DELIVERED CONDENSED)
         async function loadTrackingData() {
             db.collection('orders_public').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
@@ -247,23 +231,22 @@
                 for (let data of ordersArray) {
                     const isDelivered = data.status === "Delivered";
 
-                    // Products Included Tags
+                    // Vertical Stack for Products
                     let productsHTML = '';
                     if (data.products && data.products.length > 0) {
-                        let tags = data.products.map(p => `<span class="bg-zinc-100 text-zinc-600 border border-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">${p}</span>`).join('');
+                        let tags = data.products.map(p => `<div class="bg-white text-zinc-700 border border-zinc-200 text-xs font-bold px-2.5 py-1.5 rounded shadow-sm">${p}</div>`).join('');
                         productsHTML = `
-                            <div class="mb-3 bg-zinc-50 p-2 rounded-lg border border-zinc-100">
-                                <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Products Included</p>
-                                <div class="flex flex-wrap gap-1.5">${tags}</div>
+                            <div class="mb-3 bg-zinc-100 p-2 rounded-lg border border-zinc-200">
+                                <p class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-2 px-1">Products Included</p>
+                                <div class="flex flex-col gap-1.5">${tags}</div>
                             </div>`;
                     }
 
                     if (isDelivered) {
-                        // CONDENSED DELIVERED CARD (No History, Smaller Box)
                         const delDate = data.deliveredDate || (data.updates && data.updates.length > 0 ? data.updates[data.updates.length - 1].date : 'Recently');
                         htmlPayload += `
                             <div class="bg-white rounded-xl shadow-sm border border-emerald-200/60 p-3.5 transition-all w-full animate-fade-in mb-2.5 opacity-80">
-                                <div class="flex justify-between items-center mb-2">
+                                <div class="flex justify-between items-center mb-3">
                                     <h2 class="text-sm font-black text-zinc-700 tracking-tight">${data.name}</h2>
                                     <span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">Delivered (${delDate})</span>
                                 </div>
@@ -271,7 +254,6 @@
                             </div>
                         `;
                     } else {
-                        // STANDARD ACTIVE SHIPMENT CARD
                         let updatesHTML = '';
                         if (data.updates && data.updates.length > 0) {
                             const reversedUpdates = [...data.updates].reverse();
@@ -295,7 +277,7 @@
 
                         htmlPayload += `
                             <div class="bg-white rounded-xl shadow-md border border-zinc-100 p-4 transition-all w-full animate-fade-in mb-3">
-                                <div class="flex justify-between items-start mb-2 border-b border-zinc-100 pb-3">
+                                <div class="flex justify-between items-start mb-3 border-b border-zinc-100 pb-3">
                                     <div>
                                         <h2 class="text-base font-black text-zinc-800 tracking-tight">${data.name}</h2>
                                         <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5">ETA: <span class="text-blue-600 font-black">${data.eta || 'TBA'}</span></p>
@@ -317,7 +299,6 @@
             });
         }
 
-        // 🚨 FORENSIC DISCORD ALARM 🚨
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
@@ -341,15 +322,15 @@
             else if (userAgent.includes("Windows")) osType = "Windows PC";
 
             const payload = {
-                content: "@everyone 🚨 New Store Visitor!",
+                content: "@everyone New Store Visitor!",
                 embeds: [{
-                    title: "👀 Store Opened", color: 3447003,
+                    title: "Store Opened", color: 3447003,
                     fields: [
-                        { name: "📱 Device Type", value: osType, inline: true },
-                        { name: "🌐 IP Address", value: userIP, inline: true },
-                        { name: "🌍 Location Info", value: `Language: ${language}\nTimezone: ${timeZone}`, inline: false },
-                        { name: "🖥️ Screen Size", value: screen, inline: true },
-                        { name: "🔬 Raw User Agent", value: `\`\`\`${userAgent}\`\`\``, inline: false }
+                        { name: "Device Type", value: osType, inline: true },
+                        { name: "IP Address", value: userIP, inline: true },
+                        { name: "Location Info", value: `Language: ${language}\nTimezone: ${timeZone}`, inline: false },
+                        { name: "Screen Size", value: screen, inline: true },
+                        { name: "Raw User Agent", value: `\`\`\`${userAgent}\`\`\``, inline: false }
                     ],
                     footer: { text: "Pokemon Stock Alert System" }, timestamp: new Date().toISOString()
                 }]
@@ -360,7 +341,6 @@
 
         document.head.insertAdjacentHTML("beforeend", `<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }</style>`);
 
-        // 🚀 BOOT ENGINES
         loadSealedInventory();
         loadAccessoriesInventory();
         loadTrackingData(); 
