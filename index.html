@@ -38,7 +38,7 @@
             messagingSenderId: "599840735038",
             appId: "1:599840735038:web:ce7938b2666e24d01c766f"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
         // --- TAB LOGIC ---
@@ -55,17 +55,14 @@
             if (currentTab === tabName) return;
             currentTab = tabName;
 
-            // Reset all buttons
             tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
             tabBtnAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
             tabBtnTracking.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
             
-            // Hide all buckets
             bucketPokemon.classList.add('hidden');
             bucketAccessories.classList.add('hidden');
             bucketTracking.classList.add('hidden');
 
-            // Activate Selected
             if (tabName === 'sealed') {
                 tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
                 bucketPokemon.classList.remove('hidden');
@@ -223,7 +220,7 @@
             activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
         }
 
-        // ⚙️ ENGINE 3: TRACKING (REAL-TIME FIREBASE ENGINE)
+        // ⚙️ ENGINE 3: TRACKING (UPGRADED WITH PRODUCTS)
         async function loadTrackingData() {
             try {
                 db.collection('orders_public').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
@@ -236,6 +233,7 @@
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         
+                        // 1. Build Updates Timeline
                         let updatesHTML = '';
                         if (data.updates && data.updates.length > 0) {
                             const reversedUpdates = [...data.updates].reverse();
@@ -253,15 +251,32 @@
                             }).join('');
                         }
 
+                        // 2. Build Products List
+                        let productsHTML = '';
+                        if (data.products && data.products.length > 0) {
+                            let tags = data.products.map(p => `<span class="bg-zinc-100 text-zinc-600 border border-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">${p}</span>`).join('');
+                            productsHTML = `
+                                <div class="mb-4 bg-zinc-50 p-2 rounded-lg border border-zinc-100">
+                                    <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Products Included</p>
+                                    <div class="flex flex-wrap gap-1.5">${tags}</div>
+                                </div>`;
+                        }
+
+                        // Dynamic Status Color
+                        let statusColor = "bg-blue-50 text-blue-600 border-blue-100";
+                        if(data.status === "Delivered") statusColor = "bg-emerald-50 text-emerald-600 border-emerald-100";
+                        if(data.status === "Processing" || data.status === "Preparing") statusColor = "bg-amber-50 text-amber-600 border-amber-100";
+
                         htmlPayload += `
                             <div class="bg-white rounded-xl shadow-md border border-zinc-100 p-4 transition-all w-full animate-fade-in mb-3">
-                                <div class="flex justify-between items-center mb-4 border-b border-zinc-100 pb-3">
+                                <div class="flex justify-between items-center mb-3 border-b border-zinc-100 pb-3">
                                     <div class="flex items-center gap-2">
                                         <span class="text-xl">📦</span>
                                         <h2 class="text-base font-black text-zinc-800 tracking-tight">${data.name}</h2>
                                     </div>
-                                    <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-blue-100 shadow-sm">${data.status}</span>
+                                    <span class="${statusColor} text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider border shadow-sm">${data.status}</span>
                                 </div>
+                                ${productsHTML}
                                 <div class="pl-2 pt-1">
                                     ${updatesHTML}
                                 </div>
