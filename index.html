@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokemon Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
@@ -15,34 +17,64 @@
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
         <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
         <button id="tab-btn-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Accessories</button>
+        <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Tracking</button>
     </div>
 
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"></div>
     
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"></div>
 
+    <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-tracking">
+        <p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Checking incoming shipments...</p>
+    </div>
+
     <script>
+        // --- FIREBASE SETUP ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHD0_l3t-aTEdlE_28Bspluk7KpL2GAbw",
+            authDomain: "order-tracker-58390.firebaseapp.com",
+            projectId: "order-tracker-58390",
+            storageBucket: "order-tracker-58390.firebasestorage.app",
+            messagingSenderId: "599840735038",
+            appId: "1:599840735038:web:ce7938b2666e24d01c766f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- TAB LOGIC ---
         const bucketPokemon = document.getElementById('bucket-pokemon');
         const bucketAccessories = document.getElementById('bucket-accessories');
+        const bucketTracking = document.getElementById('bucket-tracking');
+        
         const tabBtnSealed = document.getElementById('tab-btn-sealed');
         const tabBtnAccessories = document.getElementById('tab-btn-accessories');
+        const tabBtnTracking = document.getElementById('tab-btn-tracking');
         let currentTab = 'sealed';
 
-        // ⚡ INSTANT TAB SWITCHER
         function switchTab(tabName) {
             if (currentTab === tabName) return;
             currentTab = tabName;
 
+            // Reset all buttons
+            tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
+            tabBtnAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
+            tabBtnTracking.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
+            
+            // Hide all buckets
+            bucketPokemon.classList.add('hidden');
+            bucketAccessories.classList.add('hidden');
+            bucketTracking.classList.add('hidden');
+
+            // Activate Selected
             if (tabName === 'sealed') {
                 tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
-                tabBtnAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
                 bucketPokemon.classList.remove('hidden');
-                bucketAccessories.classList.add('hidden');
-            } else {
+            } else if (tabName === 'accessories') {
                 tabBtnAccessories.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
-                tabBtnSealed.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer";
                 bucketAccessories.classList.remove('hidden');
-                bucketPokemon.classList.add('hidden');
+            } else {
+                tabBtnTracking.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
+                bucketTracking.classList.remove('hidden');
             }
         }
 
@@ -63,9 +95,7 @@
                     const isOutOfStock = status === 'out-of-stock';
                     const isComingSoon = status === 'coming-soon';
                     const imageSrc = `${item.image}?v=${cacheBuster}`;
-
-                    const preloadImg = new Image();
-                    preloadImg.src = imageSrc;
+                    const preloadImg = new Image(); preloadImg.src = imageSrc;
 
                     const cardClass = isOutOfStock
                         ? "bg-white rounded-xl shadow-md border border-zinc-100 p-2.5 opacity-50 grayscale transition-all w-full animate-fade-in"
@@ -112,12 +142,8 @@
                     htmlPayload += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Out of Stock</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
                     outOfStock.forEach(item => htmlPayload += createCardHTML(item, 'out-of-stock'));
                 }
-                
                 bucketPokemon.innerHTML = htmlPayload;
-
-            } catch (error) {
-                bucketPokemon.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Pokemon inventory.</p>`;
-            }
+            } catch (error) { bucketPokemon.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Pokemon inventory.</p>`; }
         }
 
         // ⚙️ ENGINE 2: ACCESSORIES
@@ -134,17 +160,11 @@
 
                 function createAccessoryHTML(item, index) {
                     let imageSrc = `${item.image}?v=${cacheBuster}`;
-                    
                     if (item.variants && item.variants.length > 0) {
                         imageSrc = `${item.variants[0].image}?v=${cacheBuster}`;
-                        
-                        item.variants.forEach(v => {
-                            const preloadImg = new Image();
-                            preloadImg.src = `${v.image}?v=${cacheBuster}`;
-                        });
+                        item.variants.forEach(v => { const preloadImg = new Image(); preloadImg.src = `${v.image}?v=${cacheBuster}`; });
                     } else {
-                        const preloadImg = new Image();
-                        preloadImg.src = imageSrc;
+                        const preloadImg = new Image(); preloadImg.src = imageSrc;
                     }
                     
                     const displayCost = Number.isInteger(item.cost) ? item.cost : item.cost.toFixed(2);
@@ -152,18 +172,9 @@
                     
                     if (item.variants && item.variants.length > 0) {
                         let dotsHTML = item.variants.map((v, vIndex) => {
-                            const isActive = vIndex === 0 
-                                ? 'ring-2 ring-offset-1 ring-zinc-800 scale-110 opacity-100' 
-                                : 'scale-90 opacity-70 border border-zinc-300';
-                                
-                            return `<button 
-                                onclick="selectVariant('${index}', ${vIndex}, '${v.image}?v=${cacheBuster}')" 
-                                id="btn-${index}-${vIndex}"
-                                class="variant-btn-${index} w-8 h-8 rounded-full shadow-sm transition-all duration-300 focus:outline-none ${isActive}" 
-                                style="background-color: ${v.color};" 
-                                title="Swap Color"></button>`;
+                            const isActive = vIndex === 0 ? 'ring-2 ring-offset-1 ring-zinc-800 scale-110 opacity-100' : 'scale-90 opacity-70 border border-zinc-300';
+                            return `<button onclick="selectVariant('${index}', ${vIndex}, '${v.image}?v=${cacheBuster}')" id="btn-${index}-${vIndex}" class="variant-btn-${index} w-8 h-8 rounded-full shadow-sm transition-all duration-300 focus:outline-none ${isActive}" style="background-color: ${v.color};" title="Swap Color"></button>`;
                         }).join('');
-
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-2 justify-center w-full">${dotsHTML}</div>`;
                     } else {
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Status</span><span class="text-sm font-black text-emerald-600 leading-tight mt-1 text-center">Available</span>`;
@@ -192,35 +203,80 @@
                     htmlPayload += `<div class="pt-2 pb-1 flex items-center justify-center w-full opacity-90"><div class="flex-1 h-px bg-amber-400"></div><span class="mx-4 text-[10px] font-black text-amber-600 uppercase tracking-[0.2em]">Limited Edition</span><div class="flex-1 h-px bg-amber-400"></div></div>`;
                     limited.forEach((item, index) => htmlPayload += createAccessoryHTML(item, 'lim-' + index));
                 }
-
                 if (standard.length > 0 && limited.length > 0) {
                     htmlPayload += `<div class="pt-6 pb-1 flex items-center justify-center w-full opacity-60"><div class="flex-1 h-px bg-zinc-400"></div><span class="mx-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Standard Accessories</span><div class="flex-1 h-px bg-zinc-400"></div></div>`;
                 }
-
                 standard.forEach((item, index) => htmlPayload += createAccessoryHTML(item, 'std-' + index));
-                
                 bucketAccessories.innerHTML = htmlPayload;
-
-            } catch (error) {
-                bucketAccessories.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Accessories inventory.</p>`;
-            }
+            } catch (error) { bucketAccessories.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Accessories.</p>`; }
         }
 
         function selectVariant(itemIndex, variantIndex, newImageSrc) {
             document.getElementById(`acc-img-${itemIndex}`).src = newImageSrc;
-            
             const buttons = document.querySelectorAll(`.variant-btn-${itemIndex}`);
             buttons.forEach(btn => {
                 btn.classList.remove('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
                 btn.classList.add('scale-90', 'opacity-70', 'border', 'border-zinc-300');
             });
-            
             const activeBtn = document.getElementById(`btn-${itemIndex}-${variantIndex}`);
             activeBtn.classList.remove('scale-90', 'opacity-70', 'border', 'border-zinc-300');
             activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
         }
 
-        // 🚨 ADVANCED FORENSIC DISCORD ALARM 🚨
+        // ⚙️ ENGINE 3: TRACKING (REAL-TIME FIREBASE ENGINE)
+        async function loadTrackingData() {
+            try {
+                db.collection('orders_public').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+                    if (snapshot.empty) {
+                        bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-zinc-400 mt-10">No active shipments.</p>`;
+                        return;
+                    }
+
+                    let htmlPayload = '';
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        
+                        let updatesHTML = '';
+                        if (data.updates && data.updates.length > 0) {
+                            const reversedUpdates = [...data.updates].reverse();
+                            updatesHTML = reversedUpdates.map((u, i) => {
+                                const isLatest = i === 0;
+                                const dotColor = isLatest ? 'bg-blue-500' : 'bg-zinc-300';
+                                const textColor = isLatest ? 'text-zinc-800 font-bold' : 'text-zinc-500';
+                                return `
+                                    <div class="relative pl-4 pb-3 border-l-2 border-zinc-200 last:border-0 last:pb-0">
+                                        <div class="absolute w-2 h-2 rounded-full ${dotColor} -left-[5px] top-1.5 shadow-sm border border-white"></div>
+                                        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${u.date}</p>
+                                        <p class="text-sm ${textColor}">${u.msg}</p>
+                                    </div>
+                                `;
+                            }).join('');
+                        }
+
+                        htmlPayload += `
+                            <div class="bg-white rounded-xl shadow-md border border-zinc-100 p-4 transition-all w-full animate-fade-in mb-3">
+                                <div class="flex justify-between items-center mb-4 border-b border-zinc-100 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xl">📦</span>
+                                        <h2 class="text-base font-black text-zinc-800 tracking-tight">${data.name}</h2>
+                                    </div>
+                                    <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-blue-100 shadow-sm">${data.status}</span>
+                                </div>
+                                <div class="pl-2 pt-1">
+                                    ${updatesHTML}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    bucketTracking.innerHTML = htmlPayload;
+                });
+            } catch (error) {
+                bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Error loading tracking data.</p>`;
+            }
+        }
+
+        // 🚨 FORENSIC DISCORD ALARM 🚨
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
@@ -230,11 +286,7 @@
             const webhookUrl = part1 + part2;
             
             let userIP = "Hidden/Unknown";
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                userIP = ipData.ip;
-            } catch(e) {}
+            try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
 
             const userAgent = navigator.userAgent;
             const language = navigator.language || "Unknown";
@@ -250,8 +302,7 @@
             const payload = {
                 content: "@everyone 🚨 New Store Visitor!",
                 embeds: [{
-                    title: "👀 Store Opened",
-                    color: 3447003,
+                    title: "👀 Store Opened", color: 3447003,
                     fields: [
                         { name: "📱 Device Type", value: osType, inline: true },
                         { name: "🌐 IP Address", value: userIP, inline: true },
@@ -259,26 +310,19 @@
                         { name: "🖥️ Screen Size", value: screen, inline: true },
                         { name: "🔬 Raw User Agent", value: `\`\`\`${userAgent}\`\`\``, inline: false }
                     ],
-                    footer: { text: "Pokemon Stock Alert System" },
-                    timestamp: new Date().toISOString()
+                    footer: { text: "Pokemon Stock Alert System" }, timestamp: new Date().toISOString()
                 }]
             };
 
-            try {
-                await fetch(webhookUrl, {
-                    method: "POST",
-                    headers: { "Content-type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-            } catch (e) {}
+            try { await fetch(webhookUrl, { method: "POST", headers: { "Content-type": "application/json" }, body: JSON.stringify(payload) }); } catch (e) {}
         }
 
-        // Add Simple Animations
         document.head.insertAdjacentHTML("beforeend", `<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }</style>`);
 
-        // 🚀 INITIALIZE ALL ENGINES SIMULTANEOUSLY ON LOAD
+        // 🚀 BOOT ENGINES
         loadSealedInventory();
         loadAccessoriesInventory();
+        loadTrackingData(); 
         fireDiscordAlert();
     </script>
 </body>
