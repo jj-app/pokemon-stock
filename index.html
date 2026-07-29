@@ -10,20 +10,25 @@
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
+    <!-- Header -->
     <div class="max-w-md mx-auto pt-2 pb-4 text-center">
         <h1 class="text-2xl font-black text-zinc-800 tracking-tight">Pokemon Stock</h1>
     </div>
 
+    <!-- Navigation Tabs -->
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
         <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
         <button id="tab-btn-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Accessories</button>
         <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Tracking</button>
     </div>
 
+    <!-- Bucket A: Pokemon -->
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"></div>
     
+    <!-- Bucket B: Accessories -->
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"></div>
 
+    <!-- Bucket C: Tracking -->
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-tracking">
         <p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Checking incoming shipments...</p>
     </div>
@@ -220,75 +225,86 @@
             activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
         }
 
-        // ⚙️ ENGINE 3: TRACKING (UPGRADED WITH PRODUCTS)
+        // ⚙️ ENGINE 3: TRACKING (BULLETPROOF JAVASCRIPT SORT)
         async function loadTrackingData() {
-            try {
-                db.collection('orders_public').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-                    if (snapshot.empty) {
-                        bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-zinc-400 mt-10">No active shipments.</p>`;
-                        return;
+            // Listen to ALL documents in orders_public
+            db.collection('orders_public').onSnapshot((snapshot) => {
+                
+                if (snapshot.empty) {
+                    bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-zinc-400 mt-10">No active shipments.</p>`;
+                    return;
+                }
+
+                // Push to array and sort dynamically in JS
+                let ordersArray = [];
+                snapshot.forEach(doc => ordersArray.push(doc.data()));
+                
+                ordersArray.sort((a, b) => {
+                    let timeA = a.createdAt && typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : 0;
+                    let timeB = b.createdAt && typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : 0;
+                    return timeB - timeA; // Newest first
+                });
+
+                let htmlPayload = '';
+                
+                for (let data of ordersArray) {
+                    // Build Updates Timeline
+                    let updatesHTML = '';
+                    if (data.updates && data.updates.length > 0) {
+                        const reversedUpdates = [...data.updates].reverse();
+                        updatesHTML = reversedUpdates.map((u, i) => {
+                            const isLatest = i === 0;
+                            const dotColor = isLatest ? 'bg-blue-500' : 'bg-zinc-300';
+                            const textColor = isLatest ? 'text-zinc-800 font-bold' : 'text-zinc-500';
+                            return `
+                                <div class="relative pl-4 pb-3 border-l-2 border-zinc-200 last:border-0 last:pb-0">
+                                    <div class="absolute w-2 h-2 rounded-full ${dotColor} -left-[5px] top-1.5 shadow-sm border border-white"></div>
+                                    <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${u.date}</p>
+                                    <p class="text-sm ${textColor}">${u.msg}</p>
+                                </div>
+                            `;
+                        }).join('');
                     }
 
-                    let htmlPayload = '';
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        
-                        // 1. Build Updates Timeline
-                        let updatesHTML = '';
-                        if (data.updates && data.updates.length > 0) {
-                            const reversedUpdates = [...data.updates].reverse();
-                            updatesHTML = reversedUpdates.map((u, i) => {
-                                const isLatest = i === 0;
-                                const dotColor = isLatest ? 'bg-blue-500' : 'bg-zinc-300';
-                                const textColor = isLatest ? 'text-zinc-800 font-bold' : 'text-zinc-500';
-                                return `
-                                    <div class="relative pl-4 pb-3 border-l-2 border-zinc-200 last:border-0 last:pb-0">
-                                        <div class="absolute w-2 h-2 rounded-full ${dotColor} -left-[5px] top-1.5 shadow-sm border border-white"></div>
-                                        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${u.date}</p>
-                                        <p class="text-sm ${textColor}">${u.msg}</p>
-                                    </div>
-                                `;
-                            }).join('');
-                        }
+                    // Build Products List
+                    let productsHTML = '';
+                    if (data.products && data.products.length > 0) {
+                        let tags = data.products.map(p => `<span class="bg-zinc-100 text-zinc-600 border border-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">${p}</span>`).join('');
+                        productsHTML = `
+                            <div class="mb-4 bg-zinc-50 p-2 rounded-lg border border-zinc-100">
+                                <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Products Included</p>
+                                <div class="flex flex-wrap gap-1.5">${tags}</div>
+                            </div>`;
+                    }
 
-                        // 2. Build Products List
-                        let productsHTML = '';
-                        if (data.products && data.products.length > 0) {
-                            let tags = data.products.map(p => `<span class="bg-zinc-100 text-zinc-600 border border-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">${p}</span>`).join('');
-                            productsHTML = `
-                                <div class="mb-4 bg-zinc-50 p-2 rounded-lg border border-zinc-100">
-                                    <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Products Included</p>
-                                    <div class="flex flex-wrap gap-1.5">${tags}</div>
-                                </div>`;
-                        }
+                    // Dynamic Status Color
+                    let statusColor = "bg-blue-50 text-blue-600 border-blue-100";
+                    if(data.status === "Delivered") statusColor = "bg-emerald-50 text-emerald-600 border-emerald-100";
+                    if(data.status === "Processing" || data.status === "Preparing") statusColor = "bg-amber-50 text-amber-600 border-amber-100";
+                    if(!data.status) data.status = "Unknown";
 
-                        // Dynamic Status Color
-                        let statusColor = "bg-blue-50 text-blue-600 border-blue-100";
-                        if(data.status === "Delivered") statusColor = "bg-emerald-50 text-emerald-600 border-emerald-100";
-                        if(data.status === "Processing" || data.status === "Preparing") statusColor = "bg-amber-50 text-amber-600 border-amber-100";
-
-                        htmlPayload += `
-                            <div class="bg-white rounded-xl shadow-md border border-zinc-100 p-4 transition-all w-full animate-fade-in mb-3">
-                                <div class="flex justify-between items-center mb-3 border-b border-zinc-100 pb-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xl">📦</span>
-                                        <h2 class="text-base font-black text-zinc-800 tracking-tight">${data.name}</h2>
-                                    </div>
-                                    <span class="${statusColor} text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider border shadow-sm">${data.status}</span>
+                    htmlPayload += `
+                        <div class="bg-white rounded-xl shadow-md border border-zinc-100 p-4 transition-all w-full animate-fade-in mb-3">
+                            <div class="flex justify-between items-center mb-3 border-b border-zinc-100 pb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl">📦</span>
+                                    <h2 class="text-base font-black text-zinc-800 tracking-tight">${data.name}</h2>
                                 </div>
-                                ${productsHTML}
-                                <div class="pl-2 pt-1">
-                                    ${updatesHTML}
-                                </div>
+                                <span class="${statusColor} text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider border shadow-sm">${data.status}</span>
                             </div>
-                        `;
-                    });
+                            ${productsHTML}
+                            <div class="pl-2 pt-1">
+                                ${updatesHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+                bucketTracking.innerHTML = htmlPayload;
 
-                    bucketTracking.innerHTML = htmlPayload;
-                });
-            } catch (error) {
-                bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Error loading tracking data.</p>`;
-            }
+            }, (error) => {
+                // If Firebase blocks the connection, print the exact error to the screen!
+                bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Database Blocked: ${error.message}</p>`;
+            });
         }
 
         // 🚨 FORENSIC DISCORD ALARM 🚨
