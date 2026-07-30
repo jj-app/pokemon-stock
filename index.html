@@ -14,16 +14,22 @@
         <h1 class="text-2xl font-black text-zinc-800 tracking-tight">Pokemon Stock</h1>
     </div>
 
+    <!-- Navigation Tabs -->
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
         <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
         <button id="tab-btn-accessories" onclick="switchTab('accessories')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Accessories</button>
-        <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Tracking</button>
+        <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Orders</button>
     </div>
 
+    <!-- Bucket A: Pokemon -->
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"></div>
+    
+    <!-- Bucket B: Accessories -->
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"></div>
+
+    <!-- Bucket C: Tracking (Now called Orders) -->
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-tracking">
-        <p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Checking incoming shipments...</p>
+        <p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Checking incoming orders...</p>
     </div>
 
     <script>
@@ -213,7 +219,7 @@
         async function loadTrackingData() {
             db.collection('orders_public').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-zinc-400 mt-10">No active shipments.</p>`;
+                    bucketTracking.innerHTML = `<p class="text-center text-sm font-bold text-zinc-400 mt-10">No active orders.</p>`;
                     return;
                 }
 
