@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pokemon Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -21,9 +21,7 @@
     </div>
 
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"></div>
-    
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"></div>
-
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-tracking">
         <p class="text-center text-sm font-bold text-zinc-400 animate-pulse mt-10">Checking incoming orders...</p>
     </div>
@@ -48,6 +46,35 @@
         const tabBtnAccessories = document.getElementById('tab-btn-accessories');
         const tabBtnTracking = document.getElementById('tab-btn-tracking');
         let currentTab = 'sealed';
+
+        // 📅 CUSTOM DATE FORMATTER (Translates YYYY-MM-DD to "Thur, 6th AUG 2026")
+        function formatEtaDate(dateString) {
+            if (!dateString || dateString === 'TBA') return 'TBA';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return dateString; // Fallback if custom text
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            if (isNaN(d)) return dateString;
+
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            
+            const dayName = days[d.getDay()];
+            const monthName = months[d.getMonth()];
+            const dateNum = d.getDate();
+            const year = d.getFullYear();
+
+            const getOrdinal = (n) => {
+                if (n > 3 && n < 21) return 'th';
+                switch (n % 10) {
+                    case 1:  return "st";
+                    case 2:  return "nd";
+                    case 3:  return "rd";
+                    default: return "th";
+                }
+            };
+
+            return `${dayName}, ${dateNum}${getOrdinal(dateNum)} ${monthName} ${year}`;
+        }
 
         function switchTab(tabName) {
             if (currentTab === tabName) return;
@@ -139,7 +166,6 @@
             } catch (error) { bucketPokemon.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Pokemon inventory.</p>`; }
         }
 
-        // ⚙️ ENGINE 2: ACCESSORIES (FLICKER-FREE SNAP UPDATE)
         async function loadAccessoriesInventory() {
             try {
                 const cacheBuster = new Date().getTime();
@@ -157,7 +183,6 @@
                     let imageBlockHTML = '';
                     
                     if (item.variants && item.variants.length > 0) {
-                        // ⚡ INSTANT-SNAP HTML: No absolute positioning, no opacity math!
                         let stackedImages = item.variants.map((v, vIndex) => {
                             const visibilityClass = vIndex === 0 ? 'block' : 'hidden';
                             return `<img src="${v.image}?v=${cacheBuster}" alt="${item.name}" class="variant-img-${index} w-full h-full object-cover ${visibilityClass}">`;
@@ -172,7 +197,6 @@
                         
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-2 justify-center w-full">${dotsHTML}</div>`;
                     } else {
-                        // Single Image Items
                         let imageSrc = `${item.image}?v=${cacheBuster}`;
                         imageBlockHTML = `<img src="${imageSrc}" alt="${item.name}" class="w-full h-auto aspect-square object-cover rounded shadow-sm bg-white">`;
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Status</span><span class="text-sm font-black text-emerald-600 leading-tight mt-1 text-center">Available</span>`;
@@ -209,9 +233,7 @@
             } catch (error) { bucketAccessories.innerHTML = `<p class="text-center text-sm font-bold text-red-500 mt-10">Could not load Accessories.</p>`; }
         }
 
-        // ⚡ INSTANT HARD-SNAP TOGGLER (Zero Flickering)
         function selectVariant(itemIndex, variantIndex) {
-            // 1. Swap visibility instantly
             const images = document.querySelectorAll(`.variant-img-${itemIndex}`);
             images.forEach((img, idx) => {
                 if (idx === variantIndex) {
@@ -223,7 +245,6 @@
                 }
             });
             
-            // 2. Update Button Rings
             const buttons = document.querySelectorAll(`.variant-btn-${itemIndex}`);
             buttons.forEach(btn => {
                 btn.classList.remove('ring-2', 'ring-offset-1', 'ring-zinc-800', 'scale-110', 'opacity-100');
@@ -306,7 +327,7 @@
                                 <div class="flex justify-between items-start mb-3 border-b border-zinc-100 pb-3">
                                     <div>
                                         <h2 class="text-base font-black text-zinc-800 tracking-tight">${data.name}</h2>
-                                        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5">ETA: <span class="text-blue-600 font-black">${data.eta || 'TBA'}</span></p>
+                                        <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5">ETA: <span class="text-blue-600 font-black">${formatEtaDate(data.eta)}</span></p>
                                     </div>
                                     <span class="${statusColor} text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider border shadow-sm">${data.status || 'In Transit'}</span>
                                 </div>
