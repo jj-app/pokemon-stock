@@ -30,6 +30,16 @@
         "releaseDate": ""
     },
     {
+        "name": "Chinese Gem Badge Box (12 Bags)",
+        "image": "images/chinese-gem-badge-box-12-bags.webp",
+        "cost": 330,
+        "stock": 1,
+        "isNew": false,
+        "isPopular": false,
+        "isComingSoon": false,
+        "releaseDate": ""
+    },
+    {
         "name": "Chinese Gem Vol 5 CBB5C Slim Box",
         "image": "images/pokemon/chinese-gem-vol-5-CBB5C-slim-box.webp",
         "cost": 75,
