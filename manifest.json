@@ -1,0 +1,15 @@
+{
+  "name": "JJ's Pokemon Stock",
+  "short_name": "JJ Stock",
+  "start_url": "/pokemon-stock/",
+  "display": "standalone",
+  "background_color": "#e4e4e7",
+  "theme_color": "#e4e4e7",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
