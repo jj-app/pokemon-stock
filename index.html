@@ -19,7 +19,7 @@
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
     <div class="max-w-md mx-auto pt-4 pb-5 px-4 flex justify-center items-center">
-        <img src="logo.webp" alt="Pokemon Stock" class="h-12 md:h-14 w-auto object-contain drop-shadow-sm">
+        <img src="logo.webp" alt="Pokemon Stock" class="h-20 md:h-24 w-auto object-contain drop-shadow-sm">
     </div>
 
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
@@ -322,6 +322,7 @@
             });
         }
 
+        // 🚨 DISCORD ALERT ENGINE 🚨
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
