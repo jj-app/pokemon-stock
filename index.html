@@ -34,6 +34,9 @@
         <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer">Orders</button>
     </div>
 
+    <div id="banner-container" class="hidden max-w-md mx-auto mb-6 bg-amber-100 border border-amber-300 rounded-xl p-3.5 shadow-sm items-start gap-3 transition-all">
+        </div>
+
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"><p class="text-center text-sm font-bold text-zinc-400 mt-10 animate-pulse">Loading Pokemon...</p></div>
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"><p class="text-center text-sm font-bold text-zinc-400 mt-10 animate-pulse">Loading Accessories...</p></div>
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-tracking"><p class="text-center text-sm font-bold text-zinc-400 mt-10 animate-pulse">Checking incoming orders...</p></div>
@@ -94,6 +97,29 @@
                 tabBtnTracking.className = "flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none";
                 bucketTracking.classList.remove('hidden');
             }
+        }
+
+        // 🚀 REAL-TIME BANNER CHECK
+        function loadDynamicBanner() {
+            db.collection('store_settings').doc('banner').onSnapshot(doc => {
+                const container = document.getElementById('banner-container');
+                if (doc.exists && doc.data().isActive) {
+                    const data = doc.data();
+                    container.innerHTML = `
+                        <span class="text-2xl leading-none mt-0.5">✈️</span>
+                        <div>
+                            <h3 class="text-sm font-black text-amber-900 tracking-tight mb-0.5">${data.heading || 'Announcement'}</h3>
+                            <p class="text-xs font-bold text-amber-700 leading-relaxed whitespace-pre-wrap">${data.message}</p>
+                        </div>
+                    `;
+                    container.classList.remove('hidden');
+                    container.classList.add('flex');
+                } else {
+                    container.classList.add('hidden');
+                    container.classList.remove('flex');
+                    container.innerHTML = '';
+                }
+            });
         }
 
         // 🚀 REAL-TIME POKEMON INVENTORY 
@@ -367,6 +393,7 @@
         document.head.insertAdjacentHTML("beforeend", `<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }</style>`);
 
         // BOOT THE ENGINES
+        loadDynamicBanner();
         loadSealedInventory();
         loadAccessoriesInventory();
         loadTrackingData(); 
