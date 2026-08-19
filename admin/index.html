@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="theme-color" content="#f4f4f5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Admin">
+    
+    <link rel="apple-touch-icon" href="../icon.png">
+    <link rel="icon" type="image/png" href="../icon.png">
+    <link rel="manifest" href="manifest.json">
+    
+    <title>Store CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+</head>
+<body class="bg-zinc-100 p-4 md:p-8 font-sans pb-24">
+
+    <div class="max-w-xl mx-auto">
+        <div class="flex items-center justify-center md:justify-start pt-2 pb-6">
+            <img src="../logo.webp" alt="Box Goblin Admin" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
+        </div>
+
+        <div id="loading-section" class="flex flex-col items-center justify-center py-20">
+            <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+            <p class="text-zinc-500 font-bold text-sm animate-pulse">Authenticating...</p>
+        </div>
+
+        <div id="login-section" class="hidden bg-white p-5 md:p-6 rounded-xl shadow-md mb-6">
+            <h2 class="font-bold mb-4 text-xl">Admin Login</h2>
+            <div id="login-error" class="hidden bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm font-bold"></div>
+            <input type="email" id="email" placeholder="Email Address" class="w-full p-3 border rounded-lg mb-3 bg-zinc-50">
+            <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg mb-4 bg-zinc-50">
+            <button onclick="login()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg w-full transition-colors">Sign In</button>
+        </div>
+
+        <div id="admin-section" class="hidden">
+            
+            <div class="flex gap-2 bg-zinc-300 p-1 rounded-xl mb-6 shadow-inner overflow-x-auto overflow-y-hidden snap-x">
+                <button id="tab-orders" onclick="switchAdminTab('orders')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all bg-white text-zinc-900 shadow-sm snap-start">Orders</button>
+                <button id="tab-pokemon" onclick="switchAdminTab('pokemon')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Pokemon</button>
+                <button id="tab-accessories" onclick="switchAdminTab('accessories')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Accessories</button>
+                <button id="tab-settings" onclick="switchAdminTab('settings')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">⚙️ Settings</button>
+            </div>
+
+            <div id="view-orders" class="space-y-6 block">
+                <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-emerald-500">
+                    <button onclick="openOrderModal()" class="w-full bg-emerald-500 text-white font-black py-3 rounded-lg">+ Create New Order</button>
+                </div>
+                <div id="orders-list" class="space-y-4"></div>
+            </div>
+
+            <div id="view-pokemon" class="space-y-6 hidden">
+                <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-red-500">
+                    <button onclick="openPokemonModal()" class="w-full bg-red-500 text-white font-black py-3 rounded-lg">+ Add Pokemon Box</button>
+                </div>
+                <div id="pokemon-list" class="space-y-3"></div>
+            </div>
+
+            <div id="view-accessories" class="space-y-6 hidden">
+                <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-amber-500">
+                    <button onclick="openAccessoryModal()" class="w-full bg-amber-500 text-white font-black py-3 rounded-lg">+ Add Accessory</button>
+                </div>
+                <div id="accessories-list" class="space-y-3"></div>
+            </div>
+
+            <div id="view-settings" class="space-y-6 hidden">
+                <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-blue-500 animate-fade-in-up">
+                    <h2 class="text-lg font-black text-zinc-800 mb-4">Store Announcement Banner</h2>
+                    <p class="text-xs font-bold text-zinc-500 mb-4">When turned on, this message will pin itself to the top of your public store.</p>
+                    
+                    <div class="flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
+                        <input type="checkbox" id="setting-banner-active" class="w-5 h-5 cursor-pointer">
+                        <label class="text-sm font-bold text-blue-900 flex-1 cursor-pointer" onclick="document.getElementById('setting-banner-active').click()">Show Banner to Customers?</label>
+                    </div>
+                    
+                    <input type="text" id="setting-banner-heading" placeholder="Optional Heading..." class="w-full p-3 border rounded-lg mb-3 bg-zinc-50 font-bold text-sm">
+                    <textarea id="setting-banner-message" placeholder="Message body..." class="w-full p-3 border rounded-lg mb-4 bg-zinc-50 text-sm font-medium" rows="4"></textarea>
+                    
+                    <button onclick="saveBannerSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-lg transition-colors">Update Banner</button>
+                </div>
+            </div>
+            
+            <button onclick="logout()" class="text-sm text-zinc-500 hover:text-zinc-800 underline mt-8 block mx-auto py-4">Logout</button>
+        </div>
+    </div>
+
+    <div id="modal-order" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-emerald-500 animate-fade-in-up">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="order-modal-title" class="text-xl font-black text-zinc-800">Order</h2>
+                <button onclick="closeModal('modal-order')" class="text-zinc-400 text-2xl font-black">&times;</button>
+            </div>
+            <input type="hidden" id="o-id">
+            <div class="space-y-4 mb-6">
+                <input type="text" id="o-name" placeholder="Public Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                <div class="flex gap-2">
+                    <input type="date" id="o-eta" class="w-1/2 p-3 border rounded-lg bg-zinc-50 font-bold text-sm">
+                    <select id="o-status" class="w-1/2 p-3 border rounded-lg bg-zinc-50 font-bold text-sm">
+                        <option value="Preparing">Preparing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Customs">Customs</option>
+                        <option value="AusPost Hub">AusPost Hub</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+                <textarea id="o-products" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold text-sm" rows="2" placeholder="Products (comma separated)"></textarea>
+                
+                <div id="o-timeline-wrapper" class="pt-2 hidden">
+                    <label class="block text-xs font-bold text-zinc-500 uppercase mb-2">Edit Timeline History</label>
+                    <div id="o-timeline" class="space-y-2 bg-zinc-50 p-2 rounded-lg border border-zinc-200"></div>
+                </div>
+            </div>
+            <button onclick="saveOrder()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg mb-4">Save Order</button>
+            <button id="btn-del-order" onclick="deleteOrder()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ORDER PERMANENTLY</button>
+        </div>
+    </div>
+
+    <div id="modal-pokemon" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-red-500 animate-fade-in-up">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black text-zinc-800">Pokemon Box</h2>
+                <button onclick="closeModal('modal-pokemon')" class="text-zinc-400 text-2xl font-black">&times;</button>
+            </div>
+            <input type="hidden" id="p-id">
+            <div class="space-y-4 mb-6">
+                <input type="text" id="p-name" placeholder="Item Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                <input type="text" id="p-image" placeholder="Image Path (e.g. images/box.webp)" class="w-full p-3 border rounded-lg bg-zinc-50 text-sm">
+                
+                <div class="flex gap-2">
+                    <div class="w-1/2"><label class="text-[10px] font-bold text-zinc-500 uppercase">Cost $</label><input type="number" id="p-cost" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold"></div>
+                    <div class="w-1/2"><label class="text-[10px] font-bold text-zinc-500 uppercase">Stock Qty</label><input type="number" id="p-stock" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold"></div>
+                </div>
+
+                <div class="flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
+                    <input type="checkbox" id="p-coming" class="w-5 h-5">
+                    <label class="text-sm font-bold text-blue-800 flex-1">Mark as "Coming Soon"</label>
+                    <input type="text" id="p-release" placeholder="Release Date (TBA)" class="w-1/2 p-2 border rounded text-xs bg-white">
+                </div>
+            </div>
+            <button onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4">Save Item</button>
+            <button id="btn-del-pokemon" onclick="deletePokemon()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ITEM</button>
+        </div>
+    </div>
+
+    <div id="modal-accessory" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-amber-500 animate-fade-in-up">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black text-zinc-800">Accessory</h2>
+                <button onclick="closeModal('modal-accessory')" class="text-zinc-400 text-2xl font-black">&times;</button>
+            </div>
+            <input type="hidden" id="a-id">
+            <div class="space-y-4 mb-6">
+                <input type="text" id="a-name" placeholder="Accessory Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                
+                <div id="a-main-img-container">
+                    <input type="text" id="a-image" placeholder="Main Image Path (If no variants)" class="w-full p-3 border rounded-lg bg-zinc-50 text-sm">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-bold text-zinc-500 uppercase">Cost $</label>
+                    <input type="number" id="a-cost" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                </div>
+
+                <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-lg border border-amber-100 mt-2">
+                    <input type="checkbox" id="a-limited" class="w-5 h-5">
+                    <label class="text-sm font-bold text-amber-800">Limited Edition</label>
+                </div>
+
+                <div class="flex items-center gap-2 bg-zinc-100 p-3 rounded-lg border border-zinc-200 mt-4">
+                    <input type="checkbox" id="a-has-variants" onchange="toggleVariantsUI()" class="w-5 h-5 cursor-pointer">
+                    <label class="text-sm font-bold text-zinc-800">Has Color Variants?</label>
+                </div>
+
+                <div id="a-predefined-variants" class="hidden mt-2 border border-zinc-200 rounded-lg bg-zinc-50 p-3 space-y-3">
+                    </div>
+            </div>
+            <button onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4">Save Accessory</button>
+            <button id="btn-del-accessory" onclick="deleteAccessory()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ACCESSORY</button>
+        </div>
+    </div>
+
+    <div id="custom-confirm" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div id="confirm-border" class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-amber-500 text-center animate-fade-in-up">
+            <h3 id="confirm-title" class="text-lg font-black text-zinc-800 mb-2">Confirm</h3>
+            <p id="confirm-message" class="text-sm text-zinc-600 mb-6"></p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirm(false)" class="flex-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold px-4 py-3 rounded-lg transition-colors">Cancel</button>
+                <button id="confirm-yes-btn" onclick="closeConfirm(true)" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-3 rounded-lg transition-colors">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.2s ease-out forwards; }
+    </style>
+
+    <script>
+        // 🛑 FIREBASE KEYS 🛑
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHD0_l3t-aTEdlE_28Bspluk7KpL2GAbw",
+            authDomain: "order-tracker-58390.firebaseapp.com",
+            projectId: "order-tracker-58390",
+            storageBucket: "order-tracker-58390.firebasestorage.app",
+            messagingSenderId: "599840735038",
+            appId: "1:599840735038:web:ce7938b2666e24d01c766f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let allData = { orders: {}, pokemon: {}, accessories: {} };
+        let currentSortedPokemon = [];
+        let currentSortedAccessories = [];
+
+        // 🎨 PREDEFINED BRAND COLORS
+        const PREDEFINED_COLORS = [
+            { name: 'Black', hex: '#2d2d2d' },
+            { name: 'Blue', hex: '#0072bc' },
+            { name: 'Green', hex: '#22c55e' },
+            { name: 'Pink', hex: '#e89fa1' },
+            { name: 'Purple', hex: '#6547a0' },
+            { name: 'Red', hex: '#ed1941' },
+            { name: 'Turquoise', hex: '#76e5cf' },
+            { name: 'Yellow', hex: '#ffde17' }
+        ];
+
+        // 🚀 IMAGE RESOLVER ENGINE (Pointed to parent folder)
+        function getFullImageUrl(path) {
+            if (!path) return '';
+            if (path.startsWith('http')) return path;
+            return "../" + path.replace(/^\//, ''); 
+        }
+
+        function initColors() {
+            const container = document.getElementById('a-predefined-variants');
+            let html = '<p class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Tick available colors</p>';
+            PREDEFINED_COLORS.forEach((color, i) => {
+                html += `
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="v-cb-${i}" class="w-5 h-5 cursor-pointer rounded border-zinc-300" onchange="toggleColorInput(${i})">
+                    <div class="w-6 h-6 rounded-full shadow-sm border border-zinc-200" style="background-color: ${color.hex};"></div>
+                    <label class="text-sm font-bold text-zinc-700 w-16">${color.name}</label>
+                    <input type="text" id="v-img-${i}" class="flex-1 p-2 text-xs border border-zinc-300 rounded-lg bg-white hidden focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Image Path (e.g. images/${color.name.toLowerCase()}.webp)">
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+        initColors();
+
+        auth.onAuthStateChanged(user => {
+            document.getElementById('loading-section').classList.add('hidden');
+            if (user) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('admin-section').classList.remove('hidden');
+                loadAllData();
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('admin-section').classList.add('hidden');
+            }
+        });
+
+        function login() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
+        function logout() { auth.signOut(); }
+
+        function switchAdminTab(tab) {
+            ['orders', 'pokemon', 'accessories', 'settings'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if(btn) btn.className = "flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start";
+                const view = document.getElementById(`view-${t}`);
+                if(view) view.classList.add('hidden');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            if(activeBtn) activeBtn.className = "flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all bg-white text-zinc-900 shadow-sm snap-start";
+            const activeView = document.getElementById(`view-${tab}`);
+            if(activeView) activeView.classList.remove('hidden');
+        }
+
+        function formatEtaDate(dateString) {
+            if (!dateString || dateString === 'TBA') return 'TBA';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return dateString; 
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            if (isNaN(d)) return dateString;
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            const getOrdinal = (n) => { if (n > 3 && n < 21) return 'th'; switch (n % 10) { case 1: return "st"; case 2: return "nd"; case 3: return "rd"; default: return "th"; } };
+            return `${days[d.getDay()]}, ${d.getDate()}${getOrdinal(d.getDate())} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        async function moveItem(collection, currentIndex, direction) {
+            let arr = collection === 'inventory_sealed' ? currentSortedPokemon : currentSortedAccessories;
+            let swapIndex = currentIndex + direction;
+
+            if (swapIndex < 0 || swapIndex >= arr.length) return; 
+
+            let item1 = arr[currentIndex];
+            let item2 = arr[swapIndex];
+
+            let sort1 = item1.sortOrder !== undefined ? item1.sortOrder : currentIndex;
+            let sort2 = item2.sortOrder !== undefined ? item2.sortOrder : swapIndex;
+
+            if (sort1 === sort2) { sort1 = currentIndex; sort2 = swapIndex; }
+
+            try {
+                await db.collection(collection).doc(item1.id).update({ sortOrder: sort2 });
+                await db.collection(collection).doc(item2.id).update({ sortOrder: sort1 });
+            } catch (e) { alert("Error moving item: " + e.message); }
+        }
+
+        function loadAllData() {
+            // Settings Banner
+            db.collection('store_settings').doc('banner').onSnapshot(doc => {
+                if(doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('setting-banner-active').checked = data.isActive || false;
+                    document.getElementById('setting-banner-heading').value = data.heading || '';
+                    document.getElementById('setting-banner-message').value = data.message || '';
+                } else {
+                    document.getElementById('setting-banner-heading').value = "";
+                    document.getElementById('setting-banner-message').value = "";
+                }
+            });
+
+            // Orders
+            db.collection('orders_public').onSnapshot(snap => {
+                allData.orders = {};
+                let html = '';
+                let arr = [];
+                snap.forEach(doc => { arr.push({id: doc.id, ...doc.data()}); allData.orders[doc.id] = doc.data(); });
+                arr.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+                
+                arr.forEach(data => {
+                    let statusColor = "bg-blue-100 text-blue-800";
+                    if(data.status === "Delivered") statusColor = "bg-emerald-100 text-emerald-800";
+                    if(data.status === "Preparing") statusColor = "bg-amber-100 text-amber-800";
+
+                    html += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-zinc-200">
+                        <div class="flex justify-between items-start mb-2 border-b border-zinc-100 pb-2">
+                            <div>
+                                <h3 class="font-black text-lg text-zinc-800">${data.name}</h3>
+                                <p class="text-xs font-bold text-zinc-500">ETA: <span class="text-zinc-800">${formatEtaDate(data.eta)}</span></p>
+                            </div>
+                            <span class="${statusColor} text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm">${data.status || 'Preparing'}</span>
+                        </div>
+                        
+                        <p class="text-[9px] font-bold text-zinc-400 uppercase mb-2">1-Click Quick Update</p>
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            <button onclick="addQuickUpdate('${data.id}', 'Preparing order for shipment.', 'Preparing')" class="bg-zinc-200 text-zinc-800 font-bold px-2 py-1.5 rounded-md text-xs">Preparing</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Shipped from supplier.', 'Shipped')" class="bg-blue-100 text-blue-800 font-bold px-2 py-1.5 rounded-md text-xs">Shipped</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'In transit to Australia.', 'In Transit')" class="bg-blue-100 text-blue-800 font-bold px-2 py-1.5 rounded-md text-xs">In Transit</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Undergoing customs clearance.', 'Customs')" class="bg-amber-100 text-amber-800 font-bold px-2 py-1.5 rounded-md text-xs">Customs</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Arrived at AusPost Facility.', 'AusPost Hub')" class="bg-purple-100 text-purple-800 font-bold px-2 py-1.5 rounded-md text-xs">AusPost Hub</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Out for delivery.', 'Out for Delivery')" class="bg-indigo-100 text-indigo-800 font-bold px-2 py-1.5 rounded-md text-xs">Out for Delivery</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Delivered and ready for sale!', 'Delivered')" class="bg-emerald-100 text-emerald-800 font-bold px-2 py-1.5 rounded-md text-xs">Delivered</button>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="openOrderModal('${data.id}')" class="flex-1 text-xs bg-zinc-800 text-white font-bold py-2 rounded-lg">Full Edit / Timeline</button>
+                            <button onclick="undoLastUpdate('${data.id}')" class="text-xs bg-red-50 text-red-600 border border-red-200 font-bold px-3 py-2 rounded-lg">↩ Undo</button>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('orders-list').innerHTML = html || '<p class="text-zinc-500 text-center bg-white p-4 rounded-xl">No active orders.</p>';
+            });
+
+            // Pokemon
+            db.collection('inventory_sealed').onSnapshot(snap => {
+                allData.pokemon = {};
+                let html = '';
+                let arr = [];
+                snap.forEach(doc => { arr.push({id: doc.id, ...doc.data()}); allData.pokemon[doc.id] = doc.data(); });
+                arr.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+                currentSortedPokemon = arr;
+
+                arr.forEach((data, index) => {
+                    const badge = data.isComingSoon ? '🟡 Coming Soon' : (data.stock <= 0 ? '🔴 Out of Stock' : `🟢 ${data.stock} in stock`);
+                    html += `
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-zinc-200 flex justify-between items-center">
+                        <div class="flex flex-col gap-1 pr-3 border-r border-zinc-100">
+                            <button onclick="moveItem('inventory_sealed', ${index}, -1)" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-400 text-xs px-2 py-1 rounded shadow-sm">▲</button>
+                            <button onclick="moveItem('inventory_sealed', ${index}, 1)" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-400 text-xs px-2 py-1 rounded shadow-sm">▼</button>
+                        </div>
+                        <div class="flex gap-3 items-center flex-1 pl-3">
+                            <img src="${getFullImageUrl(data.image)}" class="w-10 h-10 object-cover rounded bg-white border">
+                            <div>
+                                <p class="font-black text-sm text-zinc-800 leading-tight">${data.name}</p>
+                                <p class="text-[10px] font-bold text-zinc-500">${badge} | $${data.cost}</p>
+                            </div>
+                        </div>
+                        <button onclick="openPokemonModal('${data.id}')" class="bg-zinc-200 px-3 py-1.5 rounded text-xs font-bold ml-2">Edit</button>
+                    </div>`;
+                });
+                document.getElementById('pokemon-list').innerHTML = html || '<p class="text-zinc-500 text-center bg-white p-4 rounded-xl">No Pokemon added yet.</p>';
+            });
+
+            // Accessories
+            db.collection('inventory_accessories').onSnapshot(snap => {
+                allData.accessories = {};
+                let html = '';
+                let arr = [];
+                snap.forEach(doc => { arr.push({id: doc.id, ...doc.data()}); allData.accessories[doc.id] = doc.data(); });
+                arr.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+                currentSortedAccessories = arr;
+
+                arr.forEach((data, index) => {
+                    const vars = data.variants ? data.variants.length : 0;
+                    const img = vars > 0 ? data.variants[0].image : data.image;
+                    html += `
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-zinc-200 flex justify-between items-center">
+                        <div class="flex flex-col gap-1 pr-3 border-r border-zinc-100">
+                            <button onclick="moveItem('inventory_accessories', ${index}, -1)" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-400 text-xs px-2 py-1 rounded shadow-sm">▲</button>
+                            <button onclick="moveItem('inventory_accessories', ${index}, 1)" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-400 text-xs px-2 py-1 rounded shadow-sm">▼</button>
+                        </div>
+                        <div class="flex gap-3 items-center flex-1 pl-3">
+                            <img src="${getFullImageUrl(img)}" class="w-10 h-10 object-cover rounded bg-white border">
+                            <div>
+                                <p class="font-black text-sm text-zinc-800 leading-tight">${data.name}</p>
+                                <p class="text-[10px] font-bold text-zinc-500">${data.isLimited ? '⭐ Limited' : 'Standard'} | $${data.cost} | ${vars} Vars</p>
+                            </div>
+                        </div>
+                        <button onclick="openAccessoryModal('${data.id}')" class="bg-zinc-200 px-3 py-1.5 rounded text-xs font-bold ml-2">Edit</button>
+                    </div>`;
+                });
+                document.getElementById('accessories-list').innerHTML = html || '<p class="text-zinc-500 text-center bg-white p-4 rounded-xl">No Accessories added yet.</p>';
+            });
+        }
+
+        // 🚀 DYNAMIC BANNER SAVER
+        async function saveBannerSettings() {
+            const btn = event.target;
+            btn.innerText = "Saving...";
+            
+            const payload = {
+                isActive: document.getElementById('setting-banner-active').checked,
+                heading: document.getElementById('setting-banner-heading').value.trim(),
+                message: document.getElementById('setting-banner-message').value.trim()
+            };
+            
+            try {
+                await db.collection('store_settings').doc('banner').set(payload);
+                btn.className = "w-full bg-emerald-500 text-white font-black py-3 rounded-lg transition-colors";
+                btn.innerText = "✓ Banner Updated";
+                setTimeout(() => {
+                    btn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-lg transition-colors";
+                    btn.innerText = "Update Banner";
+                }, 2000);
+            } catch(e) {
+                alert("Error saving banner: " + e.message);
+                btn.innerText = "Update Banner";
+            }
+        }
+
+        // --- CUSTOM CONFIRM ---
+        let pendingConfirmCallback = null;
+        function showCustomConfirm(message, callback, title = "Confirm", isDanger = false) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-message').innerText = message;
+            const borderBox = document.getElementById('confirm-border');
+            const yesBtn = document.getElementById('confirm-yes-btn');
+            
+            if (isDanger) {
+                borderBox.className = "bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-red-600 text-center animate-fade-in-up";
+                yesBtn.className = "flex-1 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-3 rounded-lg";
+            } else {
+                borderBox.className = "bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-blue-500 text-center animate-fade-in-up";
+                yesBtn.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg";
+            }
+            pendingConfirmCallback = callback;
+            document.getElementById('custom-confirm').classList.remove('hidden');
+        }
+        function closeConfirm(result) {
+            document.getElementById('custom-confirm').classList.add('hidden');
+            const cb = pendingConfirmCallback;
+            pendingConfirmCallback = null; 
+            if (result && cb) cb();
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // QUICK UPDATES & UNDO
+        function addQuickUpdate(docId, msg, statusStr) {
+            showCustomConfirm(`Update status to "${statusStr}"?`, async () => {
+                const docRef = db.collection('orders_public').doc(docId);
+                const updateData = { status: statusStr, updates: firebase.firestore.FieldValue.arrayUnion({ date: new Date().toLocaleDateString(), msg: msg }) };
+                if (statusStr === "Delivered") updateData.deliveredDate = new Date().toLocaleDateString();
+                await docRef.update(updateData);
+            });
+        }
+        async function undoLastUpdate(docId) {
+            showCustomConfirm("Delete the most recent timeline update?", async () => {
+                const docRef = db.collection('orders_public').doc(docId);
+                const doc = await docRef.get();
+                if (!doc.exists) return;
+                const data = doc.data();
+                if (data.updates && data.updates.length > 1) {
+                    data.updates.pop(); 
+                    const lastMsg = data.updates[data.updates.length - 1].msg || "";
+                    let revertedStatus = "Preparing"; 
+                    if (lastMsg.includes("Shipped")) revertedStatus = "Shipped";
+                    else if (lastMsg.includes("In transit")) revertedStatus = "In Transit";
+                    else if (lastMsg.includes("customs")) revertedStatus = "Customs";
+                    else if (lastMsg.includes("AusPost Facility")) revertedStatus = "AusPost Hub";
+                    else if (lastMsg.includes("Out for delivery")) revertedStatus = "Out for Delivery";
+                    else if (lastMsg.includes("Delivered")) revertedStatus = "Delivered";
+                    const updatePayload = { updates: data.updates, status: revertedStatus };
+                    if (data.deliveredDate && revertedStatus !== "Delivered") updatePayload.deliveredDate = firebase.firestore.FieldValue.delete();
+                    await docRef.update(updatePayload);
+                } else alert("Cannot delete the first update.");
+            }, "Undo", true);
+        }
+
+        // ORDERS
+        function openOrderModal(id = null) {
+            document.getElementById('o-id').value = id || '';
+            const data = id ? allData.orders[id] : { name: '', eta: '', status: 'Preparing', products: [], updates: [] };
+            
+            document.getElementById('order-modal-title').innerText = id ? 'Edit Order' : 'New Order';
+            document.getElementById('o-name').value = data.name;
+            document.getElementById('o-eta').value = data.eta === 'TBA' ? '' : (data.eta || '');
+            document.getElementById('o-status').value = data.status || 'Preparing';
+            document.getElementById('o-products').value = (data.products || []).join(', ');
+            
+            const tlWrap = document.getElementById('o-timeline-wrapper');
+            const tl = document.getElementById('o-timeline');
+            if (id && data.updates) {
+                tlWrap.classList.remove('hidden');
+                tl.innerHTML = data.updates.map(u => `
+                    <div class="flex gap-1 update-line mb-1 items-center">
+                        <input type="text" class="u-date w-24 p-2 text-xs font-bold border rounded-md" value="${u.date}">
+                        <input type="text" class="u-msg flex-1 p-2 text-xs border rounded-md" value="${u.msg}">
+                        <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2 text-lg">&times;</button>
+                    </div>`).join('');
+            } else {
+                tlWrap.classList.add('hidden'); tl.innerHTML = '';
+            }
+            
+            document.getElementById('btn-del-order').classList.toggle('hidden', !id);
+            document.getElementById('modal-order').classList.remove('hidden');
+        }
+
+        async function saveOrder() {
+            const id = document.getElementById('o-id').value;
+            const payload = {
+                name: document.getElementById('o-name').value,
+                eta: document.getElementById('o-eta').value || "TBA",
+                status: document.getElementById('o-status').value,
+                products: document.getElementById('o-products').value.split(',').map(p=>p.trim()).filter(p=>p)
+            };
+            if(!payload.name) return alert("Needs a name!");
+
+            if(id) {
+                const uLines = document.querySelectorAll('.update-line');
+                payload.updates = Array.from(uLines).map(l => ({ date: l.querySelector('.u-date').value, msg: l.querySelector('.u-msg').value })).filter(u => u.date && u.msg);
+                if(payload.status === "Delivered" && payload.updates.length) payload.deliveredDate = payload.updates[payload.updates.length-1].date;
+                await db.collection('orders_public').doc(id).update(payload);
+            } else {
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                payload.updates = [{ date: new Date().toLocaleDateString(), msg: "Order placed." }];
+                await db.collection('orders_public').add(payload);
+            }
+            closeModal('modal-order');
+        }
+        async function deleteOrder() { 
+            showCustomConfirm("This will permanently delete this order.", async () => {
+                await db.collection('orders_public').doc(document.getElementById('o-id').value).delete(); 
+                closeModal('modal-order');
+            }, "Delete Order", true);
+        }
+
+        // POKEMON
+        function openPokemonModal(id = null) {
+            document.getElementById('p-id').value = id || '';
+            const data = id ? allData.pokemon[id] : { name: '', image: '', cost: '', stock: 0, isComingSoon: false, releaseDate: '' };
+            
+            document.getElementById('p-name').value = data.name;
+            document.getElementById('p-image').value = data.image;
+            document.getElementById('p-cost').value = data.cost;
+            document.getElementById('p-stock').value = data.stock;
+            document.getElementById('p-coming').checked = data.isComingSoon;
+            document.getElementById('p-release').value = data.releaseDate || '';
+            
+            document.getElementById('btn-del-pokemon').classList.toggle('hidden', !id);
+            document.getElementById('modal-pokemon').classList.remove('hidden');
+        }
+
+        async function savePokemon() {
+            const id = document.getElementById('p-id').value;
+            const payload = {
+                name: document.getElementById('p-name').value,
+                image: document.getElementById('p-image').value,
+                cost: Number(document.getElementById('p-cost').value),
+                stock: Number(document.getElementById('p-stock').value),
+                isComingSoon: document.getElementById('p-coming').checked,
+                releaseDate: document.getElementById('p-release').value
+            };
+            if(!payload.name || !payload.image) return alert("Needs Name and Image Path!");
+
+            if(id) {
+                payload.sortOrder = allData.pokemon[id].sortOrder || 99;
+                await db.collection('inventory_sealed').doc(id).set(payload);
+            } else {
+                payload.sortOrder = currentSortedPokemon.length;
+                await db.collection('inventory_sealed').add(payload);
+            }
+            closeModal('modal-pokemon');
+        }
+        async function deletePokemon() { 
+            showCustomConfirm("Permanently delete this Pokemon item?", async () => {
+                await db.collection('inventory_sealed').doc(document.getElementById('p-id').value).delete(); 
+                closeModal('modal-pokemon');
+            }, "Delete Item", true);
+        }
+
+        // ACCESSORY - CHECKLIST LOGIC
+        function toggleVariantsUI() {
+            const hasVars = document.getElementById('a-has-variants').checked;
+            document.getElementById('a-predefined-variants').classList.toggle('hidden', !hasVars);
+            document.getElementById('a-main-img-container').classList.toggle('hidden', hasVars);
+        }
+
+        function toggleColorInput(i) {
+            const isChecked = document.getElementById(`v-cb-${i}`).checked;
+            const imgInput = document.getElementById(`v-img-${i}`);
+            if(isChecked) { imgInput.classList.remove('hidden'); } 
+            else { imgInput.classList.add('hidden'); imgInput.value = ''; }
+        }
+
+        function openAccessoryModal(id = null) {
+            document.getElementById('a-id').value = id || '';
+            const data = id ? allData.accessories[id] : { name: '', image: '', cost: '', isLimited: false, variants: [] };
+            
+            document.getElementById('a-name').value = data.name;
+            document.getElementById('a-image').value = data.image || '';
+            document.getElementById('a-cost').value = data.cost;
+            document.getElementById('a-limited').checked = data.isLimited;
+            
+            PREDEFINED_COLORS.forEach((_, i) => {
+                document.getElementById(`v-cb-${i}`).checked = false;
+                document.getElementById(`v-img-${i}`).value = '';
+                document.getElementById(`v-img-${i}`).classList.add('hidden');
+            });
+
+            const hasVariants = data.variants && data.variants.length > 0;
+            document.getElementById('a-has-variants').checked = hasVariants;
+            toggleVariantsUI();
+
+            if(hasVariants) {
+                data.variants.forEach(v => {
+                    const index = PREDEFINED_COLORS.findIndex(c => c.hex.toLowerCase() === v.color.toLowerCase());
+                    if(index !== -1) {
+                        document.getElementById(`v-cb-${index}`).checked = true;
+                        document.getElementById(`v-img-${index}`).value = v.image;
+                        document.getElementById(`v-img-${index}`).classList.remove('hidden');
+                    }
+                });
+            }
+            
+            document.getElementById('btn-del-accessory').classList.toggle('hidden', !id);
+            document.getElementById('modal-accessory').classList.remove('hidden');
+        }
+
+        async function saveAccessory() {
+            const id = document.getElementById('a-id').value;
+            const hasVariants = document.getElementById('a-has-variants').checked;
+            const mainImage = document.getElementById('a-image').value.trim();
+
+            const payload = {
+                name: document.getElementById('a-name').value,
+                cost: Number(document.getElementById('a-cost').value),
+                isLimited: document.getElementById('a-limited').checked,
+                variants: []
+            };
+
+            if(!payload.name) return alert("Needs a Name!");
+
+            if (hasVariants) {
+                let validImages = true;
+                PREDEFINED_COLORS.forEach((color, i) => {
+                    if (document.getElementById(`v-cb-${i}`).checked) {
+                        const imgPath = document.getElementById(`v-img-${i}`).value.trim();
+                        if (!imgPath) validImages = false;
+                        else payload.variants.push({ color: color.hex, image: imgPath });
+                    }
+                });
+                
+                if(!validImages) return alert("Please type an image path for all selected colors.");
+                if(payload.variants.length === 0) return alert("Please select at least one color variant.");
+                
+                payload.image = payload.variants[0].image; // fallback
+            } else {
+                if(!mainImage) return alert("Needs a Main Image Path!");
+                payload.image = mainImage;
+            }
+
+            if(id) {
+                payload.sortOrder = allData.accessories[id].sortOrder || 99;
+                await db.collection('inventory_accessories').doc(id).set(payload);
+            } else {
+                payload.sortOrder = currentSortedAccessories.length;
+                await db.collection('inventory_accessories').add(payload);
+            }
+            closeModal('modal-accessory');
+        }
+        
+        async function deleteAccessory() { 
+            showCustomConfirm("Permanently delete this Accessory?", async () => {
+                await db.collection('inventory_accessories').doc(document.getElementById('a-id').value).delete(); 
+                closeModal('modal-accessory');
+            }, "Delete Accessory", true);
+        }
+    </script>
+</body>
+</html>
