@@ -84,9 +84,15 @@
                     
                     <h2 class="text-lg font-black text-zinc-800 mb-2">Store Logo</h2>
                     <p class="text-xs font-bold text-zinc-500 mb-3">Upload a custom logo. If empty, no logo will show.</p>
-                    <img id="setting-logo-preview" class="h-16 object-contain mb-3 hidden bg-zinc-100 p-2 rounded border">
-                    <input type="hidden" id="setting-existing-logo">
-                    <input type="file" id="setting-logo-upload" accept="image/*" class="w-full p-2 border rounded-lg mb-6 bg-zinc-50 text-sm" onchange="handleImageSelect(event, 'setting-logo-upload', 'setting-logo-preview', false)">
+                    
+                    <div class="mb-6 bg-zinc-50 p-3 border rounded-lg">
+                        <div id="setting-logo-preview-container" class="relative hidden inline-block mb-3">
+                            <img id="setting-logo-preview" class="h-16 object-contain bg-zinc-100 p-2 rounded border">
+                            <button onclick="clearImage('setting-logo-preview-container', 'setting-logo-preview', 'setting-existing-logo', 'setting-logo-upload')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">&times;</button>
+                        </div>
+                        <input type="hidden" id="setting-existing-logo">
+                        <input type="file" id="setting-logo-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'setting-logo-upload', 'setting-logo-preview', 'setting-logo-preview-container', false)">
+                    </div>
 
                     <hr class="border-zinc-200 mb-6">
 
@@ -137,9 +143,12 @@
                 
                 <div class="bg-zinc-50 p-3 border rounded-lg">
                     <label class="text-[10px] font-bold text-zinc-500 uppercase block mb-2">Upload Photo</label>
-                    <img id="p-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border mb-2 hidden bg-white">
+                    <div id="p-image-preview-container" class="relative hidden inline-block mb-2">
+                        <img id="p-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border bg-white">
+                        <button onclick="clearImage('p-image-preview-container', 'p-image-preview', 'p-existing-image', 'p-image-upload')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">&times;</button>
+                    </div>
                     <input type="hidden" id="p-existing-image">
-                    <input type="file" id="p-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'p-image-upload', 'p-image-preview', true)">
+                    <input type="file" id="p-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'p-image-upload', 'p-image-preview', 'p-image-preview-container', true)">
                 </div>
                 
                 <div class="flex gap-2">
@@ -153,7 +162,7 @@
                     <input type="text" id="p-release" placeholder="Release Date (TBA)" class="w-1/2 p-2 border rounded text-xs bg-white">
                 </div>
             </div>
-            <button onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Item</button>
+            <button id="btn-save-pokemon" onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Item</button>
             <button id="btn-del-pokemon" onclick="deletePokemon()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ITEM</button>
         </div>
     </div>
@@ -170,9 +179,12 @@
                 
                 <div id="a-main-img-container" class="bg-zinc-50 p-3 border rounded-lg">
                     <label class="text-[10px] font-bold text-zinc-500 uppercase block mb-2">Main Photo</label>
-                    <img id="a-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border mb-2 hidden bg-white">
+                    <div id="a-image-preview-container" class="relative hidden inline-block mb-2">
+                        <img id="a-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border bg-white">
+                        <button onclick="clearImage('a-image-preview-container', 'a-image-preview', 'a-existing-image', 'a-image-upload')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">&times;</button>
+                    </div>
                     <input type="hidden" id="a-existing-image">
-                    <input type="file" id="a-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'a-image-upload', 'a-image-preview', true)">
+                    <input type="file" id="a-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'a-image-upload', 'a-image-preview', 'a-image-preview-container', true)">
                 </div>
                 
                 <div>
@@ -193,7 +205,7 @@
                 <div id="a-predefined-variants" class="hidden mt-2 border border-zinc-200 rounded-lg bg-zinc-50 p-3 space-y-3">
                     </div>
             </div>
-            <button onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Accessory</button>
+            <button id="btn-save-accessory" onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Accessory</button>
             <button id="btn-del-accessory" onclick="deleteAccessory()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ACCESSORY</button>
         </div>
     </div>
@@ -287,18 +299,25 @@
             document.getElementById('global-loader').classList.add('hidden');
         }
 
+        // 🚀 ORPHAN FILE CLEANUP
+        async function deleteFileFromUrl(url) {
+            if (!url || !url.includes('firebasestorage')) return;
+            try { await storage.refFromURL(url).delete(); } 
+            catch(e) { console.warn("Old image not found or already deleted."); }
+        }
+
         // 🚀 CROPPER ENGINE LOGIC
         let pendingUploads = {}; 
         let cropperInstance = null;
         let currentCropCallback = null;
         let currentCropIsSquare = true;
 
-        function handleImageSelect(event, inputId, previewId, isSquare = true) {
+        function handleImageSelect(event, inputId, previewId, containerId, isSquare = true) {
             const file = event.target.files[0];
             if (!file) return;
 
             currentCropIsSquare = isSquare;
-            document.getElementById('cropper-title').innerText = isSquare ? "Crop Product (Square)" : "Crop Logo";
+            document.getElementById('cropper-title').innerText = isSquare ? "Crop Product (Square)" : "Crop Banner/Logo";
 
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -308,13 +327,7 @@
 
                 if (cropperInstance) cropperInstance.destroy();
                 
-                const options = {
-                    viewMode: 2,
-                    dragMode: 'move',
-                    autoCropArea: 1,
-                    background: false
-                };
-                
+                const options = { viewMode: 2, dragMode: 'move', autoCropArea: 1, background: false };
                 if (isSquare) options.aspectRatio = 1; 
 
                 cropperInstance = new Cropper(img, options);
@@ -325,10 +338,10 @@
                 pendingUploads[inputId] = blob;
                 const previewEl = document.getElementById(previewId);
                 previewEl.src = dataUrl;
-                previewEl.classList.remove('hidden');
+                document.getElementById(containerId).classList.remove('hidden');
             };
             
-            event.target.value = '';
+            event.target.value = ''; // Reset input
         }
 
         function closeCropper() {
@@ -339,19 +352,9 @@
 
         function applyCrop() {
             if (!cropperInstance) return;
-            
-            let canvasOptions = {
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high',
-            };
-
-            if (currentCropIsSquare) {
-                canvasOptions.width = 512;
-                canvasOptions.height = 512;
-            }
-
+            let canvasOptions = { imageSmoothingEnabled: true, imageSmoothingQuality: 'high' };
+            if (currentCropIsSquare) { canvasOptions.width = 512; canvasOptions.height = 512; }
             const canvas = cropperInstance.getCroppedCanvas(canvasOptions);
-
             canvas.toBlob((blob) => {
                 const dataUrl = canvas.toDataURL('image/webp', 0.8);
                 if (currentCropCallback) currentCropCallback(blob, dataUrl);
@@ -364,6 +367,16 @@
             const ref = storage.ref().child(fileName);
             await ref.put(blob);
             return await ref.getDownloadURL();
+        }
+
+        function clearImage(containerId, previewId, existingId, uploadId) {
+            document.getElementById(containerId).classList.add('hidden');
+            document.getElementById(previewId).src = '';
+            document.getElementById(existingId).value = '';
+            if(uploadId) {
+                document.getElementById(uploadId).value = '';
+                pendingUploads[uploadId] = null;
+            }
         }
 
         function getFullImageUrl(path) {
@@ -382,9 +395,12 @@
                     <div class="w-6 h-6 rounded-full shadow-sm border border-zinc-200 flex-shrink-0" style="background-color: ${color.hex};"></div>
                     <label class="text-sm font-bold text-zinc-700 w-16">${color.name}</label>
                     <div id="v-upload-zone-${i}" class="flex-1 hidden flex flex-col gap-1 items-end">
-                        <img id="v-img-preview-${i}" class="h-10 w-10 object-cover rounded shadow-sm border hidden bg-white">
+                        <div id="v-img-preview-container-${i}" class="relative hidden inline-block">
+                            <img id="v-img-preview-${i}" class="h-10 w-10 object-cover rounded shadow-sm border bg-white">
+                            <button onclick="clearImage('v-img-preview-container-${i}', 'v-img-preview-${i}', 'v-existing-img-${i}', 'v-img-upload-${i}')" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold shadow-md hover:bg-red-600">&times;</button>
+                        </div>
                         <input type="hidden" id="v-existing-img-${i}">
-                        <input type="file" id="v-img-upload-${i}" accept="image/*" class="text-[10px] w-full" onchange="handleImageSelect(event, 'v-img-upload-${i}', 'v-img-preview-${i}', true)">
+                        <input type="file" id="v-img-upload-${i}" accept="image/*" class="text-[10px] w-full" onchange="handleImageSelect(event, 'v-img-upload-${i}', 'v-img-preview-${i}', 'v-img-preview-container-${i}', true)">
                     </div>
                 </div>`;
             });
@@ -440,25 +456,20 @@
 
             if (swapIndex < 0 || swapIndex >= arr.length) return; 
 
-            showLoader("Updating Order...");
-
-            // Physically swap them in the array
+            // Physically swap them in the array locally
             let temp = arr[currentIndex];
             arr[currentIndex] = arr[swapIndex];
             arr[swapIndex] = temp;
 
             try {
-                // Batch update completely rewrites the sortOrder for everything to ensure no collisions
+                // Batch update rewrites the sortOrder silently and instantly
                 let batch = db.batch();
                 arr.forEach((item, index) => {
                     let ref = db.collection(collection).doc(item.id);
                     batch.update(ref, { sortOrder: index });
                 });
                 await batch.commit();
-            } catch (e) { 
-                alert("Error moving item: " + e.message); 
-            }
-            hideLoader();
+            } catch (e) { alert("Error moving item: " + e.message); }
         }
 
         function loadAllData() {
@@ -473,11 +484,11 @@
                     document.getElementById('setting-existing-logo').value = data.logoUrl || '';
                     if(data.logoUrl) {
                         document.getElementById('setting-logo-preview').src = data.logoUrl;
-                        document.getElementById('setting-logo-preview').classList.remove('hidden');
+                        document.getElementById('setting-logo-preview-container').classList.remove('hidden');
                         document.getElementById('admin-dynamic-logo').src = data.logoUrl;
                         document.getElementById('admin-header-logo').classList.remove('hidden');
                     } else {
-                        document.getElementById('setting-logo-preview').classList.add('hidden');
+                        document.getElementById('setting-logo-preview-container').classList.add('hidden');
                         document.getElementById('admin-header-logo').classList.add('hidden');
                     }
                 }
@@ -601,6 +612,11 @@
                     pendingUploads['setting-logo-upload'] = null;
                 }
 
+                const oldDoc = await db.collection('store_settings').doc('banner').get();
+                if (oldDoc.exists && oldDoc.data().logoUrl && oldDoc.data().logoUrl !== finalLogoUrl) {
+                    await deleteFileFromUrl(oldDoc.data().logoUrl);
+                }
+
                 const payload = {
                     logoUrl: finalLogoUrl,
                     isActive: document.getElementById('setting-banner-active').checked,
@@ -616,32 +632,39 @@
             }
         }
 
-        // --- CUSTOM CONFIRM & MODALS ---
-        function showCustomConfirm(message, callback, title = "Confirm", isDanger = false) {
-            document.getElementById('confirm-title').innerText = title;
-            document.getElementById('confirm-message').innerText = message;
-            const borderBox = document.getElementById('confirm-border');
-            const yesBtn = document.getElementById('confirm-yes-btn');
-            
-            borderBox.className = isDanger 
-                ? "bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-red-600 text-center animate-fade-in-up"
-                : "bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-blue-500 text-center animate-fade-in-up";
-            yesBtn.className = isDanger 
-                ? "flex-1 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-3 rounded-lg"
-                : "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg";
-                
-            pendingConfirmCallback = callback;
-            document.getElementById('custom-confirm').classList.remove('hidden');
+        // --- QUICK UPDATES ---
+        function addQuickUpdate(docId, msg, statusStr) {
+            showCustomConfirm(`Update status to "${statusStr}"?`, async () => {
+                const docRef = db.collection('orders_public').doc(docId);
+                const updateData = { status: statusStr, updates: firebase.firestore.FieldValue.arrayUnion({ date: new Date().toLocaleDateString(), msg: msg }) };
+                if (statusStr === "Delivered") updateData.deliveredDate = new Date().toLocaleDateString();
+                await docRef.update(updateData);
+            });
         }
-        function closeConfirm(result) {
-            document.getElementById('custom-confirm').classList.add('hidden');
-            const cb = pendingConfirmCallback;
-            pendingConfirmCallback = null; 
-            if (result && cb) cb();
+        async function undoLastUpdate(docId) {
+            showCustomConfirm("Delete the most recent timeline update?", async () => {
+                const docRef = db.collection('orders_public').doc(docId);
+                const doc = await docRef.get();
+                if (!doc.exists) return;
+                const data = doc.data();
+                if (data.updates && data.updates.length > 1) {
+                    data.updates.pop(); 
+                    const lastMsg = data.updates[data.updates.length - 1].msg || "";
+                    let revertedStatus = "Preparing"; 
+                    if (lastMsg.includes("Shipped")) revertedStatus = "Shipped";
+                    else if (lastMsg.includes("In transit")) revertedStatus = "In Transit";
+                    else if (lastMsg.includes("customs")) revertedStatus = "Customs";
+                    else if (lastMsg.includes("AusPost Facility")) revertedStatus = "AusPost Hub";
+                    else if (lastMsg.includes("Out for delivery")) revertedStatus = "Out for Delivery";
+                    else if (lastMsg.includes("Delivered")) revertedStatus = "Delivered";
+                    const updatePayload = { updates: data.updates, status: revertedStatus };
+                    if (data.deliveredDate && revertedStatus !== "Delivered") updatePayload.deliveredDate = firebase.firestore.FieldValue.delete();
+                    await docRef.update(updatePayload);
+                } else alert("Cannot delete the first update.");
+            }, "Undo", true);
         }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // ORDERS LOGIC
+        // ORDERS
         function openOrderModal(id = null) {
             document.getElementById('o-id').value = id || '';
             const data = id ? allData.orders[id] : { name: '', eta: '', status: 'Preparing', products: [], updates: [] };
@@ -710,7 +733,7 @@
             }, "Delete Order", true);
         }
 
-        // 🚀 POKEMON WITH UPLOADER
+        // 🚀 POKEMON WITH UPLOADER & SWEEPER
         function openPokemonModal(id = null) {
             document.getElementById('p-id').value = id || '';
             const data = id ? allData.pokemon[id] : { name: '', image: '', cost: '', stock: 0, isComingSoon: false, releaseDate: '' };
@@ -720,9 +743,11 @@
             
             document.getElementById('p-existing-image').value = data.image || '';
             document.getElementById('p-image-upload').value = '';
-            const preview = document.getElementById('p-image-preview');
-            if(data.image) { preview.src = getFullImageUrl(data.image); preview.classList.remove('hidden'); } 
-            else { preview.classList.add('hidden'); }
+            const previewContainer = document.getElementById('p-image-preview-container');
+            if(data.image) { 
+                document.getElementById('p-image-preview').src = getFullImageUrl(data.image); 
+                previewContainer.classList.remove('hidden'); 
+            } else { previewContainer.classList.add('hidden'); }
             
             document.getElementById('p-cost').value = data.cost;
             document.getElementById('p-stock').value = data.stock;
@@ -748,6 +773,13 @@
                 if(!document.getElementById('p-name').value || !finalImageUrl) {
                     hideLoader();
                     return alert("Needs Name and Image!");
+                }
+
+                if (id) {
+                    const oldDoc = await db.collection('inventory_sealed').doc(id).get();
+                    if (oldDoc.exists && oldDoc.data().image && oldDoc.data().image !== finalImageUrl) {
+                        await deleteFileFromUrl(oldDoc.data().image);
+                    }
                 }
 
                 const payload = {
@@ -777,13 +809,16 @@
         async function deletePokemon() { 
             showCustomConfirm("Permanently delete this Pokemon item?", async () => {
                 showLoader("Deleting Item...");
-                await db.collection('inventory_sealed').doc(document.getElementById('p-id').value).delete(); 
+                const id = document.getElementById('p-id').value;
+                const doc = await db.collection('inventory_sealed').doc(id).get();
+                if(doc.exists && doc.data().image) await deleteFileFromUrl(doc.data().image);
+                await db.collection('inventory_sealed').doc(id).delete(); 
                 hideLoader();
                 closeModal('modal-pokemon');
             }, "Delete Item", true);
         }
 
-        // 🚀 ACCESSORIES WITH UPLOADER
+        // 🚀 ACCESSORIES WITH UPLOADER & SWEEPER
         function toggleVariantsUI() {
             const hasVars = document.getElementById('a-has-variants').checked;
             document.getElementById('a-predefined-variants').classList.toggle('hidden', !hasVars);
@@ -812,9 +847,11 @@
             pendingUploads['a-image-upload'] = null;
             document.getElementById('a-existing-image').value = data.image || '';
             document.getElementById('a-image-upload').value = '';
-            const mainPreview = document.getElementById('a-image-preview');
-            if(data.image) { mainPreview.src = getFullImageUrl(data.image); mainPreview.classList.remove('hidden'); } 
-            else { mainPreview.classList.add('hidden'); }
+            const mainContainer = document.getElementById('a-image-preview-container');
+            if(data.image) { 
+                document.getElementById('a-image-preview').src = getFullImageUrl(data.image); 
+                mainContainer.classList.remove('hidden'); 
+            } else { mainContainer.classList.add('hidden'); }
 
             document.getElementById('a-cost').value = data.cost;
             document.getElementById('a-limited').checked = data.isLimited;
@@ -825,7 +862,7 @@
                 document.getElementById(`v-existing-img-${i}`).value = '';
                 document.getElementById(`v-img-upload-${i}`).value = '';
                 document.getElementById(`v-upload-zone-${i}`).classList.add('hidden');
-                document.getElementById(`v-img-preview-${i}`).classList.add('hidden');
+                document.getElementById(`v-img-preview-container-${i}`).classList.add('hidden');
                 pendingUploads[`v-img-upload-${i}`] = null;
             });
 
@@ -840,9 +877,8 @@
                         document.getElementById(`v-cb-${index}`).checked = true;
                         document.getElementById(`v-upload-zone-${index}`).classList.remove('hidden');
                         document.getElementById(`v-existing-img-${index}`).value = v.image;
-                        const vPreview = document.getElementById(`v-img-preview-${index}`);
-                        vPreview.src = getFullImageUrl(v.image);
-                        vPreview.classList.remove('hidden');
+                        document.getElementById(`v-img-preview-${index}`).src = getFullImageUrl(v.image);
+                        document.getElementById(`v-img-preview-container-${index}`).classList.remove('hidden');
                     }
                 });
             }
@@ -869,22 +905,23 @@
                     return alert("Needs a Name!");
                 }
 
+                let newUrls = []; // Track urls we want to keep
+
                 if (hasVariants) {
                     for (let i = 0; i < PREDEFINED_COLORS.length; i++) {
                         if (document.getElementById(`v-cb-${i}`).checked) {
                             let finalVUrl = document.getElementById(`v-existing-img-${i}`).value;
-                            
                             if (pendingUploads[`v-img-upload-${i}`]) {
                                 showLoader(`Uploading ${PREDEFINED_COLORS[i].name} Photo...`);
                                 finalVUrl = await uploadBlobToFirebase(pendingUploads[`v-img-upload-${i}`], 'accessories');
                                 pendingUploads[`v-img-upload-${i}`] = null;
                             }
-                            
                             if(!finalVUrl) {
                                 hideLoader();
                                 return alert(`Need an image for ${PREDEFINED_COLORS[i].name}!`);
                             }
                             payload.variants.push({ color: PREDEFINED_COLORS[i].hex, image: finalVUrl });
+                            newUrls.push(finalVUrl);
                         }
                     }
                     if(payload.variants.length === 0) {
@@ -894,29 +931,35 @@
                     payload.image = payload.variants[0].image; 
                 } else {
                     let finalMainUrl = document.getElementById('a-existing-image').value;
-                    
                     if (pendingUploads['a-image-upload']) {
                         showLoader("Uploading Photo...");
                         finalMainUrl = await uploadBlobToFirebase(pendingUploads['a-image-upload'], 'accessories');
                         pendingUploads['a-image-upload'] = null;
                     }
-                    
                     if(!finalMainUrl) {
                         hideLoader();
                         return alert("Needs a Main Image!");
                     }
                     payload.image = finalMainUrl;
+                    newUrls.push(finalMainUrl);
                 }
 
-                showLoader("Saving Database...");
                 if(id) {
+                    const oldDoc = await db.collection('inventory_accessories').doc(id).get();
+                    if(oldDoc.exists) {
+                        let oldUrls = [];
+                        if (oldDoc.data().image) oldUrls.push(oldDoc.data().image);
+                        if (oldDoc.data().variants) oldDoc.data().variants.forEach(v => { if (v.image) oldUrls.push(v.image) });
+                        for (let oldUrl of oldUrls) {
+                            if (!newUrls.includes(oldUrl)) await deleteFileFromUrl(oldUrl);
+                        }
+                    }
                     payload.sortOrder = allData.accessories[id].sortOrder || 99;
                     await db.collection('inventory_accessories').doc(id).set(payload);
                 } else {
                     payload.sortOrder = currentSortedAccessories.length;
                     await db.collection('inventory_accessories').add(payload);
                 }
-                
                 hideLoader();
                 closeModal('modal-accessory');
             } catch(e) {
@@ -928,7 +971,16 @@
         async function deleteAccessory() { 
             showCustomConfirm("Permanently delete this Accessory?", async () => {
                 showLoader("Deleting Accessory...");
-                await db.collection('inventory_accessories').doc(document.getElementById('a-id').value).delete(); 
+                const id = document.getElementById('a-id').value;
+                const doc = await db.collection('inventory_accessories').doc(id).get();
+                if(doc.exists) {
+                    const data = doc.data();
+                    if(data.image) await deleteFileFromUrl(data.image);
+                    if(data.variants) {
+                        for(let v of data.variants) if(v.image) await deleteFileFromUrl(v.image);
+                    }
+                }
+                await db.collection('inventory_accessories').doc(id).delete(); 
                 hideLoader();
                 closeModal('modal-accessory');
             }, "Delete Accessory", true);
