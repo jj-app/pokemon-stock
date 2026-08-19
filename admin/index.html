@@ -26,6 +26,11 @@
 </head>
 <body class="bg-zinc-100 p-4 md:p-8 font-sans pb-24">
 
+    <div id="global-loader" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-all">
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p id="global-loader-text" class="text-white font-black text-lg animate-pulse">Processing...</p>
+    </div>
+
     <div class="max-w-xl mx-auto">
         <div class="flex items-center justify-center md:justify-start pt-2 pb-6 hidden" id="admin-header-logo">
             <img id="admin-dynamic-logo" alt="Admin Dashboard" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
@@ -50,7 +55,7 @@
                 <button id="tab-orders" onclick="switchAdminTab('orders')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all bg-white text-zinc-900 shadow-sm snap-start">Orders</button>
                 <button id="tab-pokemon" onclick="switchAdminTab('pokemon')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Pokemon</button>
                 <button id="tab-accessories" onclick="switchAdminTab('accessories')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Accessories</button>
-                <button id="tab-settings" onclick="switchAdminTab('settings')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">⚙️ Settings</button>
+                <button id="tab-settings" onclick="switchAdminTab('settings')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Settings</button>
             </div>
 
             <div id="view-orders" class="space-y-6 block">
@@ -131,7 +136,7 @@
                 <input type="text" id="p-name" placeholder="Item Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
                 
                 <div class="bg-zinc-50 p-3 border rounded-lg">
-                    <label class="text-[10px] font-bold text-zinc-500 uppercase block mb-2">Upload Photo (Will force a Square)</label>
+                    <label class="text-[10px] font-bold text-zinc-500 uppercase block mb-2">Upload Photo</label>
                     <img id="p-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border mb-2 hidden bg-white">
                     <input type="hidden" id="p-existing-image">
                     <input type="file" id="p-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'p-image-upload', 'p-image-preview', true)">
@@ -148,7 +153,7 @@
                     <input type="text" id="p-release" placeholder="Release Date (TBA)" class="w-1/2 p-2 border rounded text-xs bg-white">
                 </div>
             </div>
-            <button id="btn-save-pokemon" onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Item</button>
+            <button onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Item</button>
             <button id="btn-del-pokemon" onclick="deletePokemon()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ITEM</button>
         </div>
     </div>
@@ -188,7 +193,7 @@
                 <div id="a-predefined-variants" class="hidden mt-2 border border-zinc-200 rounded-lg bg-zinc-50 p-3 space-y-3">
                     </div>
             </div>
-            <button id="btn-save-accessory" onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Accessory</button>
+            <button onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Accessory</button>
             <button id="btn-del-accessory" onclick="deleteAccessory()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ACCESSORY</button>
         </div>
     </div>
@@ -273,8 +278,17 @@
             { name: 'Yellow', hex: '#ffde17' }
         ];
 
+        // 🚀 GLOBAL OVERLAY LOADER
+        function showLoader(msg = "Processing...") {
+            document.getElementById('global-loader-text').innerText = msg;
+            document.getElementById('global-loader').classList.remove('hidden');
+        }
+        function hideLoader() {
+            document.getElementById('global-loader').classList.add('hidden');
+        }
+
         // 🚀 CROPPER ENGINE LOGIC
-        let pendingUploads = {}; // Stores perfectly cropped images waiting to be saved
+        let pendingUploads = {}; 
         let cropperInstance = null;
         let currentCropCallback = null;
         let currentCropIsSquare = true;
@@ -301,7 +315,7 @@
                     background: false
                 };
                 
-                if (isSquare) options.aspectRatio = 1; // Force a perfect square
+                if (isSquare) options.aspectRatio = 1; 
 
                 cropperInstance = new Cropper(img, options);
             };
@@ -314,7 +328,6 @@
                 previewEl.classList.remove('hidden');
             };
             
-            // Clear the file input so they can select the exact same file again if they mess up
             event.target.value = '';
         }
 
@@ -332,7 +345,6 @@
                 imageSmoothingQuality: 'high',
             };
 
-            // Force exact 512x512 sizing for perfect product squares
             if (currentCropIsSquare) {
                 canvasOptions.width = 512;
                 canvasOptions.height = 512;
@@ -340,7 +352,6 @@
 
             const canvas = cropperInstance.getCroppedCanvas(canvasOptions);
 
-            // Squeeze it down to a tiny, lightning-fast WebP file
             canvas.toBlob((blob) => {
                 const dataUrl = canvas.toDataURL('image/webp', 0.8);
                 if (currentCropCallback) currentCropCallback(blob, dataUrl);
@@ -355,7 +366,6 @@
             return await ref.getDownloadURL();
         }
 
-        // 🚀 IMAGE RESOLVER
         function getFullImageUrl(path) {
             if (!path) return '';
             if (path.startsWith('http')) return path;
@@ -411,6 +421,46 @@
             if(activeView) activeView.classList.remove('hidden');
         }
 
+        function formatEtaDate(dateString) {
+            if (!dateString || dateString === 'TBA') return 'TBA';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return dateString; 
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            if (isNaN(d)) return dateString;
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            const getOrdinal = (n) => { if (n > 3 && n < 21) return 'th'; switch (n % 10) { case 1: return "st"; case 2: return "nd"; case 3: return "rd"; default: return "th"; } };
+            return `${days[d.getDay()]}, ${d.getDate()}${getOrdinal(d.getDate())} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        // 🚀 BULLETPROOF ARROW SORTING
+        async function moveItem(collection, currentIndex, direction) {
+            let arr = collection === 'inventory_sealed' ? [...currentSortedPokemon] : [...currentSortedAccessories];
+            let swapIndex = currentIndex + direction;
+
+            if (swapIndex < 0 || swapIndex >= arr.length) return; 
+
+            showLoader("Updating Order...");
+
+            // Physically swap them in the array
+            let temp = arr[currentIndex];
+            arr[currentIndex] = arr[swapIndex];
+            arr[swapIndex] = temp;
+
+            try {
+                // Batch update completely rewrites the sortOrder for everything to ensure no collisions
+                let batch = db.batch();
+                arr.forEach((item, index) => {
+                    let ref = db.collection(collection).doc(item.id);
+                    batch.update(ref, { sortOrder: index });
+                });
+                await batch.commit();
+            } catch (e) { 
+                alert("Error moving item: " + e.message); 
+            }
+            hideLoader();
+        }
+
         function loadAllData() {
             // Settings Banner
             db.collection('store_settings').doc('banner').onSnapshot(doc => {
@@ -455,8 +505,21 @@
                             </div>
                             <span class="${statusColor} text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm">${data.status || 'Preparing'}</span>
                         </div>
+                        
+                        <p class="text-[9px] font-bold text-zinc-400 uppercase mb-2">1-Click Quick Update</p>
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            <button onclick="addQuickUpdate('${data.id}', 'Preparing order for shipment.', 'Preparing')" class="bg-zinc-200 text-zinc-800 font-bold px-2 py-1.5 rounded-md text-xs">Preparing</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Shipped from supplier.', 'Shipped')" class="bg-blue-100 text-blue-800 font-bold px-2 py-1.5 rounded-md text-xs">Shipped</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'In transit to Australia.', 'In Transit')" class="bg-blue-100 text-blue-800 font-bold px-2 py-1.5 rounded-md text-xs">In Transit</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Undergoing customs clearance.', 'Customs')" class="bg-amber-100 text-amber-800 font-bold px-2 py-1.5 rounded-md text-xs">Customs</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Arrived at AusPost Facility.', 'AusPost Hub')" class="bg-purple-100 text-purple-800 font-bold px-2 py-1.5 rounded-md text-xs">AusPost Hub</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Out for delivery.', 'Out for Delivery')" class="bg-indigo-100 text-indigo-800 font-bold px-2 py-1.5 rounded-md text-xs">Out for Delivery</button>
+                            <button onclick="addQuickUpdate('${data.id}', 'Delivered and ready for sale!', 'Delivered')" class="bg-emerald-100 text-emerald-800 font-bold px-2 py-1.5 rounded-md text-xs">Delivered</button>
+                        </div>
+
                         <div class="flex gap-2">
                             <button onclick="openOrderModal('${data.id}')" class="flex-1 text-xs bg-zinc-800 text-white font-bold py-2 rounded-lg">Full Edit / Timeline</button>
+                            <button onclick="undoLastUpdate('${data.id}')" class="text-xs bg-red-50 text-red-600 border border-red-200 font-bold px-3 py-2 rounded-lg">↩ Undo</button>
                         </div>
                     </div>`;
                 });
@@ -527,14 +590,13 @@
 
         // 🚀 SETTINGS UPLOADER
         async function saveBannerSettings() {
-            const btn = document.getElementById('btn-save-settings');
-            btn.innerText = "Saving Settings...";
+            showLoader("Saving Settings...");
             
             let finalLogoUrl = document.getElementById('setting-existing-logo').value;
             
             try {
                 if (pendingUploads['setting-logo-upload']) {
-                    btn.innerText = "Uploading Logo...";
+                    showLoader("Uploading Logo...");
                     finalLogoUrl = await uploadBlobToFirebase(pendingUploads['setting-logo-upload'], 'logos');
                     pendingUploads['setting-logo-upload'] = null;
                 }
@@ -547,15 +609,10 @@
                 };
                 
                 await db.collection('store_settings').doc('banner').set(payload);
-                btn.className = "w-full bg-emerald-500 text-white font-black py-3 rounded-lg transition-colors shadow-md";
-                btn.innerText = "✓ Settings Saved";
-                setTimeout(() => {
-                    btn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-lg transition-colors shadow-md";
-                    btn.innerText = "Update Store Settings";
-                }, 2000);
+                hideLoader();
             } catch(e) {
+                hideLoader();
                 alert("Error saving settings: " + e.message);
-                btn.innerText = "Update Store Settings";
             }
         }
 
@@ -612,6 +669,7 @@
         }
 
         async function saveOrder() {
+            showLoader("Saving Order...");
             const id = document.getElementById('o-id').value;
             const payload = {
                 name: document.getElementById('o-name').value,
@@ -619,23 +677,35 @@
                 status: document.getElementById('o-status').value,
                 products: document.getElementById('o-products').value.split(',').map(p=>p.trim()).filter(p=>p)
             };
-            if(!payload.name) return alert("Needs a name!");
-
-            if(id) {
-                const uLines = document.querySelectorAll('.update-line');
-                payload.updates = Array.from(uLines).map(l => ({ date: l.querySelector('.u-date').value, msg: l.querySelector('.u-msg').value })).filter(u => u.date && u.msg);
-                if(payload.status === "Delivered" && payload.updates.length) payload.deliveredDate = payload.updates[payload.updates.length-1].date;
-                await db.collection('orders_public').doc(id).update(payload);
-            } else {
-                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                payload.updates = [{ date: new Date().toLocaleDateString(), msg: "Order placed." }];
-                await db.collection('orders_public').add(payload);
+            if(!payload.name) {
+                hideLoader();
+                return alert("Needs a name!");
             }
-            closeModal('modal-order');
+
+            try {
+                if(id) {
+                    const uLines = document.querySelectorAll('.update-line');
+                    payload.updates = Array.from(uLines).map(l => ({ date: l.querySelector('.u-date').value, msg: l.querySelector('.u-msg').value })).filter(u => u.date && u.msg);
+                    if(payload.status === "Delivered" && payload.updates.length) payload.deliveredDate = payload.updates[payload.updates.length-1].date;
+                    await db.collection('orders_public').doc(id).update(payload);
+                } else {
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    payload.updates = [{ date: new Date().toLocaleDateString(), msg: "Order placed." }];
+                    await db.collection('orders_public').add(payload);
+                }
+                hideLoader();
+                closeModal('modal-order');
+            } catch (e) {
+                hideLoader();
+                alert("Error: " + e.message);
+            }
         }
+        
         async function deleteOrder() { 
             showCustomConfirm("This will permanently delete this order.", async () => {
+                showLoader("Deleting Order...");
                 await db.collection('orders_public').doc(document.getElementById('o-id').value).delete(); 
+                hideLoader();
                 closeModal('modal-order');
             }, "Delete Order", true);
         }
@@ -646,7 +716,7 @@
             const data = id ? allData.pokemon[id] : { name: '', image: '', cost: '', stock: 0, isComingSoon: false, releaseDate: '' };
             
             document.getElementById('p-name').value = data.name;
-            pendingUploads['p-image-upload'] = null; // Clear old pending crops
+            pendingUploads['p-image-upload'] = null; 
             
             document.getElementById('p-existing-image').value = data.image || '';
             document.getElementById('p-image-upload').value = '';
@@ -664,21 +734,19 @@
         }
 
         async function savePokemon() {
-            const btn = document.getElementById('btn-save-pokemon');
-            btn.innerText = "Saving Item...";
+            showLoader("Saving Item...");
             const id = document.getElementById('p-id').value;
-            
             let finalImageUrl = document.getElementById('p-existing-image').value;
             
             try {
                 if (pendingUploads['p-image-upload']) {
-                    btn.innerText = "Uploading Photo...";
+                    showLoader("Uploading Photo...");
                     finalImageUrl = await uploadBlobToFirebase(pendingUploads['p-image-upload'], 'pokemon');
                     pendingUploads['p-image-upload'] = null;
                 }
 
                 if(!document.getElementById('p-name').value || !finalImageUrl) {
-                    btn.innerText = "Save Item";
+                    hideLoader();
                     return alert("Needs Name and Image!");
                 }
 
@@ -698,16 +766,19 @@
                     payload.sortOrder = currentSortedPokemon.length;
                     await db.collection('inventory_sealed').add(payload);
                 }
-                btn.innerText = "Save Item";
+                hideLoader();
                 closeModal('modal-pokemon');
             } catch(e) {
+                hideLoader();
                 alert("Error saving: " + e.message);
-                btn.innerText = "Save Item";
             }
         }
+
         async function deletePokemon() { 
             showCustomConfirm("Permanently delete this Pokemon item?", async () => {
+                showLoader("Deleting Item...");
                 await db.collection('inventory_sealed').doc(document.getElementById('p-id').value).delete(); 
+                hideLoader();
                 closeModal('modal-pokemon');
             }, "Delete Item", true);
         }
@@ -781,8 +852,7 @@
         }
 
         async function saveAccessory() {
-            const btn = document.getElementById('btn-save-accessory');
-            btn.innerText = "Saving Accessory...";
+            showLoader("Saving Accessory...");
             const id = document.getElementById('a-id').value;
             const hasVariants = document.getElementById('a-has-variants').checked;
 
@@ -795,7 +865,7 @@
                 };
 
                 if(!payload.name) {
-                    btn.innerText = "Save Accessory";
+                    hideLoader();
                     return alert("Needs a Name!");
                 }
 
@@ -805,20 +875,20 @@
                             let finalVUrl = document.getElementById(`v-existing-img-${i}`).value;
                             
                             if (pendingUploads[`v-img-upload-${i}`]) {
-                                btn.innerText = `Uploading ${PREDEFINED_COLORS[i].name}...`;
+                                showLoader(`Uploading ${PREDEFINED_COLORS[i].name} Photo...`);
                                 finalVUrl = await uploadBlobToFirebase(pendingUploads[`v-img-upload-${i}`], 'accessories');
                                 pendingUploads[`v-img-upload-${i}`] = null;
                             }
                             
                             if(!finalVUrl) {
-                                btn.innerText = "Save Accessory";
+                                hideLoader();
                                 return alert(`Need an image for ${PREDEFINED_COLORS[i].name}!`);
                             }
                             payload.variants.push({ color: PREDEFINED_COLORS[i].hex, image: finalVUrl });
                         }
                     }
                     if(payload.variants.length === 0) {
-                        btn.innerText = "Save Accessory";
+                        hideLoader();
                         return alert("Please select at least one color variant.");
                     }
                     payload.image = payload.variants[0].image; 
@@ -826,18 +896,19 @@
                     let finalMainUrl = document.getElementById('a-existing-image').value;
                     
                     if (pendingUploads['a-image-upload']) {
-                        btn.innerText = "Uploading Photo...";
+                        showLoader("Uploading Photo...");
                         finalMainUrl = await uploadBlobToFirebase(pendingUploads['a-image-upload'], 'accessories');
                         pendingUploads['a-image-upload'] = null;
                     }
                     
                     if(!finalMainUrl) {
-                        btn.innerText = "Save Accessory";
+                        hideLoader();
                         return alert("Needs a Main Image!");
                     }
                     payload.image = finalMainUrl;
                 }
 
+                showLoader("Saving Database...");
                 if(id) {
                     payload.sortOrder = allData.accessories[id].sortOrder || 99;
                     await db.collection('inventory_accessories').doc(id).set(payload);
@@ -845,17 +916,20 @@
                     payload.sortOrder = currentSortedAccessories.length;
                     await db.collection('inventory_accessories').add(payload);
                 }
-                btn.innerText = "Save Accessory";
+                
+                hideLoader();
                 closeModal('modal-accessory');
             } catch(e) {
+                hideLoader();
                 alert("Error saving: " + e.message);
-                btn.innerText = "Save Accessory";
             }
         }
         
         async function deleteAccessory() { 
             showCustomConfirm("Permanently delete this Accessory?", async () => {
+                showLoader("Deleting Accessory...");
                 await db.collection('inventory_accessories').doc(document.getElementById('a-id').value).delete(); 
+                hideLoader();
                 closeModal('modal-accessory');
             }, "Delete Accessory", true);
         }
