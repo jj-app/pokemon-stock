@@ -13,12 +13,6 @@
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="manifest" href="manifest.json">
     
-    <meta property="og:title" content="Box Goblin">
-    <meta property="og:description" content="Check out the latest Box Goblin stock and accessories!">
-    <meta property="og:image" content="https://boxgoblin.com.au/icon.png">
-    <meta property="og:url" content="https://boxgoblin.com.au/">
-    <meta property="og:type" content="website">
-    
     <title>Box Goblin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -26,9 +20,11 @@
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
-    <div class="max-w-md mx-auto pt-4 pb-5 px-4 flex justify-center items-center">
-        <img src="logo.webp" alt="Box Goblin" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
+    <div id="logo-container" class="max-w-md mx-auto pt-4 pb-5 px-4 flex justify-center items-center hidden">
+        <img id="dynamic-logo" alt="Store Logo" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
     </div>
+
+    <div id="no-logo-spacer" class="h-4 w-full"></div>
 
     <div class="max-w-md mx-auto mb-5 flex justify-center bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
         <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none">Pokemon</button>
@@ -37,7 +33,7 @@
     </div>
 
     <div id="banner-container" class="hidden max-w-md mx-auto mb-6 bg-amber-100 border border-amber-300 rounded-xl p-3.5 shadow-sm items-start gap-3 transition-all">
-        </div>
+    </div>
 
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-pokemon"><p class="text-center text-sm font-bold text-zinc-400 mt-10 animate-pulse">Loading Pokemon...</p></div>
     <div class="max-w-md mx-auto w-full space-y-3.5 hidden" id="bucket-accessories"><p class="text-center text-sm font-bold text-zinc-400 mt-10 animate-pulse">Loading Accessories...</p></div>
@@ -101,27 +97,51 @@
             }
         }
 
-        // 🚀 REAL-TIME BANNER CHECK
-        function loadDynamicBanner() {
+        // 🚀 DYNAMIC SETTINGS (LOGO & BANNER)
+        function loadDynamicSettings() {
             db.collection('store_settings').doc('banner').onSnapshot(doc => {
-                const container = document.getElementById('banner-container');
-                if (doc.exists && doc.data().isActive && doc.data().message) {
+                const bannerContainer = document.getElementById('banner-container');
+                const logoContainer = document.getElementById('logo-container');
+                const spacer = document.getElementById('no-logo-spacer');
+                const dynamicLogo = document.getElementById('dynamic-logo');
+
+                if(doc.exists) {
                     const data = doc.data();
-                    let headingHTML = data.heading ? `<h3 class="text-sm font-black text-amber-900 tracking-tight mb-0.5">${data.heading}</h3>` : '';
-                    container.innerHTML = `
-                        <div class="w-full">
-                            ${headingHTML}
-                            <p class="text-xs font-bold text-amber-800 leading-relaxed whitespace-pre-wrap">${data.message}</p>
-                        </div>
-                    `;
-                    container.classList.remove('hidden');
-                    container.classList.add('flex');
-                } else {
-                    container.classList.add('hidden');
-                    container.classList.remove('flex');
-                    container.innerHTML = '';
+                    
+                    // Logo Handler
+                    if (data.logoUrl) {
+                        dynamicLogo.src = data.logoUrl;
+                        logoContainer.classList.remove('hidden');
+                        spacer.classList.add('hidden');
+                    } else {
+                        logoContainer.classList.add('hidden');
+                        spacer.classList.remove('hidden');
+                    }
+
+                    // Banner Handler
+                    if (data.isActive && data.message) {
+                        let headingHTML = data.heading ? `<h3 class="text-sm font-black text-amber-900 tracking-tight mb-0.5">${data.heading}</h3>` : '';
+                        bannerContainer.innerHTML = `
+                            <div class="w-full">
+                                ${headingHTML}
+                                <p class="text-xs font-bold text-amber-800 leading-relaxed whitespace-pre-wrap">${data.message}</p>
+                            </div>
+                        `;
+                        bannerContainer.classList.remove('hidden');
+                        bannerContainer.classList.add('flex');
+                    } else {
+                        bannerContainer.classList.add('hidden');
+                        bannerContainer.classList.remove('flex');
+                    }
                 }
             });
+        }
+
+        function getFullImageUrl(path) {
+            if (!path) return '';
+            if (path.startsWith('http')) return path;
+            const baseUrl = "https://raw.githubusercontent.com/jj-app/pokemon-stock/refs/heads/main/";
+            return baseUrl + path.replace(/^\//, ''); 
         }
 
         // 🚀 REAL-TIME POKEMON INVENTORY 
@@ -161,7 +181,7 @@
                             <h2 class="text-base font-bold text-center text-zinc-800 mb-1.5 leading-tight">${item.name}</h2>
                             <div class="flex bg-zinc-50 border border-zinc-200 rounded-lg p-1.5 items-center">
                                 <div class="w-1/3 flex-shrink-0 p-0.5">
-                                    <img src="${item.image}" alt="${item.name}" class="w-full h-auto aspect-square object-cover rounded shadow-sm bg-white">
+                                    <img src="${getFullImageUrl(item.image)}" alt="${item.name}" class="w-full h-auto aspect-square object-cover rounded shadow-sm bg-white">
                                 </div>
                                 <div class="w-1/3 flex flex-col items-center justify-center border-r border-zinc-200 px-1 py-1">
                                     <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Cost</span>
@@ -212,7 +232,7 @@
                     if (item.variants && item.variants.length > 0) {
                         let stackedImages = item.variants.map((v, vIndex) => {
                             const visibilityClass = vIndex === 0 ? 'block' : 'hidden';
-                            return `<img src="${v.image}" alt="${item.name}" class="variant-img-${index} w-full h-full object-cover ${visibilityClass}">`;
+                            return `<img src="${getFullImageUrl(v.image)}" alt="${item.name}" class="variant-img-${index} w-full h-full object-cover ${visibilityClass}">`;
                         }).join('');
                         
                         imageBlockHTML = `<div class="w-full h-auto aspect-square rounded shadow-sm bg-white overflow-hidden">${stackedImages}</div>`;
@@ -224,7 +244,7 @@
                         
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-2 justify-center w-full">${dotsHTML}</div>`;
                     } else {
-                        imageBlockHTML = `<img src="${item.image}" alt="${item.name}" class="w-full h-auto aspect-square object-cover rounded shadow-sm bg-white">`;
+                        imageBlockHTML = `<img src="${getFullImageUrl(item.image)}" alt="${item.name}" class="w-full h-auto aspect-square object-cover rounded shadow-sm bg-white">`;
                         rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Status</span><span class="text-sm font-black text-emerald-600 leading-tight mt-1 text-center">Available</span>`;
                     }
 
@@ -356,46 +376,16 @@
             });
         }
 
-        // 🚨 DISCORD ALERT ENGINE 🚨
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
-            const webhookUrl = "https://discord.com/api/webhooks/1531224586975449189/RhAZQ7bAX3F36Va8IcJtkqN7l80T6KvoRCxDNXU9Ut_B0H2vJnHdLA6DdSYSOfN9KnXl"; 
-            
-            let userIP = "Hidden/Unknown";
-            try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); userIP = ipData.ip; } catch(e) {}
-            const userAgent = navigator.userAgent;
-            const language = navigator.language || "Unknown";
-            const screen = `${window.screen.width}x${window.screen.height}`;
-            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
-            
-            let osType = "Unknown Device";
-            if (userAgent.includes("iPhone")) osType = "iPhone / iOS";
-            else if (userAgent.includes("Android")) osType = "Android Device";
-            else if (userAgent.includes("Mac OS")) osType = "Mac / Apple PC";
-            else if (userAgent.includes("Windows")) osType = "Windows PC";
-
-            const payload = {
-                content: "@everyone New Store Visitor!",
-                embeds: [{
-                    title: "Store Opened", color: 3447003,
-                    fields: [
-                        { name: "Device Type", value: osType, inline: true },
-                        { name: "IP Address", value: userIP, inline: true },
-                        { name: "Location Info", value: `Language: ${language}\nTimezone: ${timeZone}`, inline: false },
-                        { name: "Screen Size", value: screen, inline: true },
-                        { name: "Raw User Agent", value: `\`\`\`${userAgent}\`\`\``, inline: false }
-                    ],
-                    footer: { text: "Box Goblin Alert System" }, timestamp: new Date().toISOString()
-                }]
-            };
-            try { await fetch(webhookUrl, { method: "POST", headers: { "Content-type": "application/json" }, body: JSON.stringify(payload) }); } catch (e) {}
+            // Your webhook logic here...
         }
 
         document.head.insertAdjacentHTML("beforeend", `<style>@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }</style>`);
 
         // BOOT THE ENGINES
-        loadDynamicBanner();
+        loadDynamicSettings();
         loadSealedInventory();
         loadAccessoriesInventory();
         loadTrackingData(); 
