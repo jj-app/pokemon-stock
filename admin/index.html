@@ -14,26 +14,16 @@
     <link rel="manifest" href="manifest.json">
     
     <title>Store CMS</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body class="bg-zinc-100 p-4 md:p-8 font-sans pb-24">
 
-    <div id="global-loader" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-all">
-        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p id="global-loader-text" class="text-white font-black text-lg animate-pulse">Processing...</p>
-    </div>
-
     <div class="max-w-xl mx-auto">
-        <div class="flex items-center justify-center md:justify-start pt-2 pb-6 hidden" id="admin-header-logo">
-            <img id="admin-dynamic-logo" alt="Admin Dashboard" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
+        <div class="flex items-center justify-center md:justify-start pt-2 pb-6">
+            <img src="../logo.webp" alt="Box Goblin Admin" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
         </div>
 
         <div id="loading-section" class="flex flex-col items-center justify-center py-20">
@@ -55,7 +45,7 @@
                 <button id="tab-orders" onclick="switchAdminTab('orders')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all bg-white text-zinc-900 shadow-sm snap-start">Orders</button>
                 <button id="tab-pokemon" onclick="switchAdminTab('pokemon')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Pokemon</button>
                 <button id="tab-accessories" onclick="switchAdminTab('accessories')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Accessories</button>
-                <button id="tab-settings" onclick="switchAdminTab('settings')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">Settings</button>
+                <button id="tab-settings" onclick="switchAdminTab('settings')" class="flex-shrink-0 px-4 py-2.5 text-sm font-black rounded-lg transition-all text-zinc-500 snap-start">⚙️ Settings</button>
             </div>
 
             <div id="view-orders" class="space-y-6 block">
@@ -81,23 +71,8 @@
 
             <div id="view-settings" class="space-y-6 hidden">
                 <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-blue-500 animate-fade-in-up">
-                    
-                    <h2 class="text-lg font-black text-zinc-800 mb-2">Store Logo</h2>
-                    <p class="text-xs font-bold text-zinc-500 mb-3">Upload a custom logo. If empty, no logo will show.</p>
-                    
-                    <div class="mb-6 bg-zinc-50 p-3 border rounded-lg">
-                        <div id="setting-logo-preview-container" class="relative hidden inline-block mb-3">
-                            <img id="setting-logo-preview" class="h-16 object-contain bg-zinc-100 p-2 rounded border">
-                            <button onclick="clearImage('setting-logo-preview-container', 'setting-logo-preview', 'setting-existing-logo', 'setting-logo-upload')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">&times;</button>
-                        </div>
-                        <input type="hidden" id="setting-existing-logo">
-                        <input type="file" id="setting-logo-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'setting-logo-upload', 'setting-logo-preview', 'setting-logo-preview-container', false)">
-                    </div>
-
-                    <hr class="border-zinc-200 mb-6">
-
-                    <h2 class="text-lg font-black text-zinc-800 mb-2">Store Announcement Banner</h2>
-                    <p class="text-xs font-bold text-zinc-500 mb-4">When turned on, this message pins to the top of the store.</p>
+                    <h2 class="text-lg font-black text-zinc-800 mb-4">Store Announcement Banner</h2>
+                    <p class="text-xs font-bold text-zinc-500 mb-4">When turned on, this message will pin itself to the top of your public store.</p>
                     
                     <div class="flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
                         <input type="checkbox" id="setting-banner-active" class="w-5 h-5 cursor-pointer">
@@ -107,106 +82,11 @@
                     <input type="text" id="setting-banner-heading" placeholder="Optional Heading..." class="w-full p-3 border rounded-lg mb-3 bg-zinc-50 font-bold text-sm">
                     <textarea id="setting-banner-message" placeholder="Message body..." class="w-full p-3 border rounded-lg mb-4 bg-zinc-50 text-sm font-medium" rows="4"></textarea>
                     
-                    <button id="btn-save-settings" onclick="saveBannerSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-lg transition-colors shadow-md">Update Store Settings</button>
+                    <button onclick="saveBannerSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-lg transition-colors">Update Banner</button>
                 </div>
             </div>
             
             <button onclick="logout()" class="text-sm text-zinc-500 hover:text-zinc-800 underline mt-8 block mx-auto py-4">Logout</button>
-        </div>
-    </div>
-
-    <div id="modal-cropper" class="hidden fixed inset-0 bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-[70]">
-        <div class="w-full max-w-lg bg-zinc-900 rounded-xl shadow-2xl p-4 flex flex-col h-[80vh] md:h-auto">
-            <h3 class="text-white font-black text-lg mb-3" id="cropper-title">Crop Image</h3>
-            <p class="text-zinc-400 text-xs font-bold mb-3">Pinch to zoom, drag to move.</p>
-            
-            <div class="w-full flex-1 bg-black rounded-lg overflow-hidden mb-4 relative min-h-[300px]">
-                <img id="cropper-image" src="" class="max-w-full block">
-            </div>
-            
-            <div class="flex gap-3 mt-auto">
-                <button onclick="closeCropper()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3.5 rounded-lg transition-colors">Cancel</button>
-                <button onclick="applyCrop()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-3.5 rounded-lg transition-colors">Crop & Save</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-pokemon" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
-        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-red-500 animate-fade-in-up">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-black text-zinc-800">Pokemon Box</h2>
-                <button onclick="closeModal('modal-pokemon')" class="text-zinc-400 text-2xl font-black">&times;</button>
-            </div>
-            <input type="hidden" id="p-id">
-            <div class="space-y-4 mb-6">
-                <input type="text" id="p-name" placeholder="Item Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
-                
-                <div class="bg-zinc-50 p-3 border rounded-lg">
-                    <label class="text-[10px] font-bold text-zinc-500 uppercase block mb-2">Upload Photo</label>
-                    <div id="p-image-preview-container" class="relative hidden inline-block mb-2">
-                        <img id="p-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border bg-white">
-                        <button onclick="clearImage('p-image-preview-container', 'p-image-preview', 'p-existing-image', 'p-image-upload')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">&times;</button>
-                    </div>
-                    <input type="hidden" id="p-existing-image">
-                    <input type="file" id="p-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'p-image-upload', 'p-image-preview', 'p-image-preview-container', true)">
-                </div>
-                
-                <div class="flex gap-2">
-                    <div class="w-1/2"><label class="text-[10px] font-bold text-zinc-500 uppercase">Cost $</label><input type="number" id="p-cost" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold"></div>
-                    <div class="w-1/2"><label class="text-[10px] font-bold text-zinc-500 uppercase">Stock Qty</label><input type="number" id="p-stock" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold"></div>
-                </div>
-
-                <div class="flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
-                    <input type="checkbox" id="p-coming" class="w-5 h-5">
-                    <label class="text-sm font-bold text-blue-800 flex-1">Mark as "Coming Soon"</label>
-                    <input type="text" id="p-release" placeholder="Release Date (TBA)" class="w-1/2 p-2 border rounded text-xs bg-white">
-                </div>
-            </div>
-            <button id="btn-save-pokemon" onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Item</button>
-            <button id="btn-del-pokemon" onclick="deletePokemon()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ITEM</button>
-        </div>
-    </div>
-
-    <div id="modal-accessory" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
-        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-amber-500 animate-fade-in-up">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-black text-zinc-800">Accessory</h2>
-                <button onclick="closeModal('modal-accessory')" class="text-zinc-400 text-2xl font-black">&times;</button>
-            </div>
-            <input type="hidden" id="a-id">
-            <div class="space-y-4 mb-6">
-                <input type="text" id="a-name" placeholder="Accessory Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
-                
-                <div id="a-main-img-container" class="bg-zinc-50 p-3 border rounded-lg">
-                    <label class="text-[10px] font-bold text-zinc-500 uppercase block mb-2">Main Photo</label>
-                    <div id="a-image-preview-container" class="relative hidden inline-block mb-2">
-                        <img id="a-image-preview" class="w-20 h-20 object-cover rounded shadow-sm border bg-white">
-                        <button onclick="clearImage('a-image-preview-container', 'a-image-preview', 'a-existing-image', 'a-image-upload')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600">&times;</button>
-                    </div>
-                    <input type="hidden" id="a-existing-image">
-                    <input type="file" id="a-image-upload" accept="image/*" class="w-full text-xs" onchange="handleImageSelect(event, 'a-image-upload', 'a-image-preview', 'a-image-preview-container', true)">
-                </div>
-                
-                <div>
-                    <label class="text-[10px] font-bold text-zinc-500 uppercase">Cost $</label>
-                    <input type="number" id="a-cost" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
-                </div>
-
-                <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-lg border border-amber-100 mt-2">
-                    <input type="checkbox" id="a-limited" class="w-5 h-5">
-                    <label class="text-sm font-bold text-amber-800">Limited Edition</label>
-                </div>
-
-                <div class="flex items-center gap-2 bg-zinc-100 p-3 rounded-lg border border-zinc-200 mt-4">
-                    <input type="checkbox" id="a-has-variants" onchange="toggleVariantsUI()" class="w-5 h-5 cursor-pointer">
-                    <label class="text-sm font-bold text-zinc-800">Has Color Variants?</label>
-                </div>
-
-                <div id="a-predefined-variants" class="hidden mt-2 border border-zinc-200 rounded-lg bg-zinc-50 p-3 space-y-3">
-                    </div>
-            </div>
-            <button id="btn-save-accessory" onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4 shadow-md">Save Accessory</button>
-            <button id="btn-del-accessory" onclick="deleteAccessory()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ACCESSORY</button>
         </div>
     </div>
 
@@ -243,6 +123,70 @@
         </div>
     </div>
 
+    <div id="modal-pokemon" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-red-500 animate-fade-in-up">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black text-zinc-800">Pokemon Box</h2>
+                <button onclick="closeModal('modal-pokemon')" class="text-zinc-400 text-2xl font-black">&times;</button>
+            </div>
+            <input type="hidden" id="p-id">
+            <div class="space-y-4 mb-6">
+                <input type="text" id="p-name" placeholder="Item Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                <input type="text" id="p-image" placeholder="Image Path (e.g. images/box.webp)" class="w-full p-3 border rounded-lg bg-zinc-50 text-sm">
+                
+                <div class="flex gap-2">
+                    <div class="w-1/2"><label class="text-[10px] font-bold text-zinc-500 uppercase">Cost $</label><input type="number" id="p-cost" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold"></div>
+                    <div class="w-1/2"><label class="text-[10px] font-bold text-zinc-500 uppercase">Stock Qty</label><input type="number" id="p-stock" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold"></div>
+                </div>
+
+                <div class="flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
+                    <input type="checkbox" id="p-coming" class="w-5 h-5">
+                    <label class="text-sm font-bold text-blue-800 flex-1">Mark as "Coming Soon"</label>
+                    <input type="text" id="p-release" placeholder="Release Date (TBA)" class="w-1/2 p-2 border rounded text-xs bg-white">
+                </div>
+            </div>
+            <button onclick="savePokemon()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mb-4">Save Item</button>
+            <button id="btn-del-pokemon" onclick="deletePokemon()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ITEM</button>
+        </div>
+    </div>
+
+    <div id="modal-accessory" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+        <div class="bg-white rounded-t-2xl md:rounded-xl shadow-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto border-t-4 border-amber-500 animate-fade-in-up">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black text-zinc-800">Accessory</h2>
+                <button onclick="closeModal('modal-accessory')" class="text-zinc-400 text-2xl font-black">&times;</button>
+            </div>
+            <input type="hidden" id="a-id">
+            <div class="space-y-4 mb-6">
+                <input type="text" id="a-name" placeholder="Accessory Name" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                
+                <div id="a-main-img-container">
+                    <input type="text" id="a-image" placeholder="Main Image Path (If no variants)" class="w-full p-3 border rounded-lg bg-zinc-50 text-sm">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-bold text-zinc-500 uppercase">Cost $</label>
+                    <input type="number" id="a-cost" class="w-full p-3 border rounded-lg bg-zinc-50 font-bold">
+                </div>
+
+                <div class="flex items-center gap-2 bg-amber-50 p-3 rounded-lg border border-amber-100 mt-2">
+                    <input type="checkbox" id="a-limited" class="w-5 h-5">
+                    <label class="text-sm font-bold text-amber-800">Limited Edition</label>
+                </div>
+
+                <div class="flex items-center gap-2 bg-zinc-100 p-3 rounded-lg border border-zinc-200 mt-4">
+                    <input type="checkbox" id="a-has-variants" onchange="toggleVariantsUI()" class="w-5 h-5 cursor-pointer">
+                    <label class="text-sm font-bold text-zinc-800">Has Color Variants?</label>
+                </div>
+
+                <div id="a-predefined-variants" class="hidden mt-2 border border-zinc-200 rounded-lg bg-zinc-50 p-3 space-y-3">
+                    </div>
+            </div>
+            <button onclick="saveAccessory()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg mb-4">Save Accessory</button>
+            <button id="btn-del-accessory" onclick="deleteAccessory()" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-3 rounded-lg hidden">DELETE ACCESSORY</button>
+        </div>
+    </div>
+
     <div id="custom-confirm" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
         <div id="confirm-border" class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-amber-500 text-center animate-fade-in-up">
             <h3 id="confirm-title" class="text-lg font-black text-zinc-800 mb-2">Confirm</h3>
@@ -272,7 +216,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const storage = firebase.storage();
 
         let allData = { orders: {}, pokemon: {}, accessories: {} };
         let currentSortedPokemon = [];
@@ -290,95 +233,7 @@
             { name: 'Yellow', hex: '#ffde17' }
         ];
 
-        // 🚀 GLOBAL OVERLAY LOADER
-        function showLoader(msg = "Processing...") {
-            document.getElementById('global-loader-text').innerText = msg;
-            document.getElementById('global-loader').classList.remove('hidden');
-        }
-        function hideLoader() {
-            document.getElementById('global-loader').classList.add('hidden');
-        }
-
-        // 🚀 ORPHAN FILE CLEANUP
-        async function deleteFileFromUrl(url) {
-            if (!url || !url.includes('firebasestorage')) return;
-            try { await storage.refFromURL(url).delete(); } 
-            catch(e) { console.warn("Old image not found or already deleted."); }
-        }
-
-        // 🚀 CROPPER ENGINE LOGIC
-        let pendingUploads = {}; 
-        let cropperInstance = null;
-        let currentCropCallback = null;
-        let currentCropIsSquare = true;
-
-        function handleImageSelect(event, inputId, previewId, containerId, isSquare = true) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            currentCropIsSquare = isSquare;
-            document.getElementById('cropper-title').innerText = isSquare ? "Crop Product (Square)" : "Crop Banner/Logo";
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.getElementById('cropper-image');
-                img.src = e.target.result;
-                document.getElementById('modal-cropper').classList.remove('hidden');
-
-                if (cropperInstance) cropperInstance.destroy();
-                
-                const options = { viewMode: 2, dragMode: 'move', autoCropArea: 1, background: false };
-                if (isSquare) options.aspectRatio = 1; 
-
-                cropperInstance = new Cropper(img, options);
-            };
-            reader.readAsDataURL(file);
-
-            currentCropCallback = (blob, dataUrl) => {
-                pendingUploads[inputId] = blob;
-                const previewEl = document.getElementById(previewId);
-                previewEl.src = dataUrl;
-                document.getElementById(containerId).classList.remove('hidden');
-            };
-            
-            event.target.value = ''; // Reset input
-        }
-
-        function closeCropper() {
-            document.getElementById('modal-cropper').classList.add('hidden');
-            if (cropperInstance) cropperInstance.destroy();
-            currentCropCallback = null;
-        }
-
-        function applyCrop() {
-            if (!cropperInstance) return;
-            let canvasOptions = { imageSmoothingEnabled: true, imageSmoothingQuality: 'high' };
-            if (currentCropIsSquare) { canvasOptions.width = 512; canvasOptions.height = 512; }
-            const canvas = cropperInstance.getCroppedCanvas(canvasOptions);
-            canvas.toBlob((blob) => {
-                const dataUrl = canvas.toDataURL('image/webp', 0.8);
-                if (currentCropCallback) currentCropCallback(blob, dataUrl);
-                closeCropper();
-            }, 'image/webp', 0.8);
-        }
-
-        async function uploadBlobToFirebase(blob, folderName) {
-            const fileName = `${folderName}/${Date.now()}.webp`;
-            const ref = storage.ref().child(fileName);
-            await ref.put(blob);
-            return await ref.getDownloadURL();
-        }
-
-        function clearImage(containerId, previewId, existingId, uploadId) {
-            document.getElementById(containerId).classList.add('hidden');
-            document.getElementById(previewId).src = '';
-            document.getElementById(existingId).value = '';
-            if(uploadId) {
-                document.getElementById(uploadId).value = '';
-                pendingUploads[uploadId] = null;
-            }
-        }
-
+        // 🚀 IMAGE RESOLVER ENGINE (Pointed to parent folder)
         function getFullImageUrl(path) {
             if (!path) return '';
             if (path.startsWith('http')) return path;
@@ -387,21 +242,14 @@
 
         function initColors() {
             const container = document.getElementById('a-predefined-variants');
-            let html = '<p class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Tick available colors & Upload</p>';
+            let html = '<p class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Tick available colors</p>';
             PREDEFINED_COLORS.forEach((color, i) => {
                 html += `
-                <div class="flex items-center gap-3 border-b border-zinc-200/50 pb-2 mb-2 last:border-0">
+                <div class="flex items-center gap-3">
                     <input type="checkbox" id="v-cb-${i}" class="w-5 h-5 cursor-pointer rounded border-zinc-300" onchange="toggleColorInput(${i})">
-                    <div class="w-6 h-6 rounded-full shadow-sm border border-zinc-200 flex-shrink-0" style="background-color: ${color.hex};"></div>
+                    <div class="w-6 h-6 rounded-full shadow-sm border border-zinc-200" style="background-color: ${color.hex};"></div>
                     <label class="text-sm font-bold text-zinc-700 w-16">${color.name}</label>
-                    <div id="v-upload-zone-${i}" class="flex-1 hidden flex flex-col gap-1 items-end">
-                        <div id="v-img-preview-container-${i}" class="relative hidden inline-block">
-                            <img id="v-img-preview-${i}" class="h-10 w-10 object-cover rounded shadow-sm border bg-white">
-                            <button onclick="clearImage('v-img-preview-container-${i}', 'v-img-preview-${i}', 'v-existing-img-${i}', 'v-img-upload-${i}')" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold shadow-md hover:bg-red-600">&times;</button>
-                        </div>
-                        <input type="hidden" id="v-existing-img-${i}">
-                        <input type="file" id="v-img-upload-${i}" accept="image/*" class="text-[10px] w-full" onchange="handleImageSelect(event, 'v-img-upload-${i}', 'v-img-preview-${i}', 'v-img-preview-container-${i}', true)">
-                    </div>
+                    <input type="text" id="v-img-${i}" class="flex-1 p-2 text-xs border border-zinc-300 rounded-lg bg-white hidden focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Image Path (e.g. images/${color.name.toLowerCase()}.webp)">
                 </div>`;
             });
             container.innerHTML = html;
@@ -449,26 +297,23 @@
             return `${days[d.getDay()]}, ${d.getDate()}${getOrdinal(d.getDate())} ${months[d.getMonth()]} ${d.getFullYear()}`;
         }
 
-        // 🚀 BULLETPROOF ARROW SORTING
         async function moveItem(collection, currentIndex, direction) {
-            let arr = collection === 'inventory_sealed' ? [...currentSortedPokemon] : [...currentSortedAccessories];
+            let arr = collection === 'inventory_sealed' ? currentSortedPokemon : currentSortedAccessories;
             let swapIndex = currentIndex + direction;
 
             if (swapIndex < 0 || swapIndex >= arr.length) return; 
 
-            // Physically swap them in the array locally
-            let temp = arr[currentIndex];
-            arr[currentIndex] = arr[swapIndex];
-            arr[swapIndex] = temp;
+            let item1 = arr[currentIndex];
+            let item2 = arr[swapIndex];
+
+            let sort1 = item1.sortOrder !== undefined ? item1.sortOrder : currentIndex;
+            let sort2 = item2.sortOrder !== undefined ? item2.sortOrder : swapIndex;
+
+            if (sort1 === sort2) { sort1 = currentIndex; sort2 = swapIndex; }
 
             try {
-                // Batch update rewrites the sortOrder silently and instantly
-                let batch = db.batch();
-                arr.forEach((item, index) => {
-                    let ref = db.collection(collection).doc(item.id);
-                    batch.update(ref, { sortOrder: index });
-                });
-                await batch.commit();
+                await db.collection(collection).doc(item1.id).update({ sortOrder: sort2 });
+                await db.collection(collection).doc(item2.id).update({ sortOrder: sort1 });
             } catch (e) { alert("Error moving item: " + e.message); }
         }
 
@@ -480,17 +325,9 @@
                     document.getElementById('setting-banner-active').checked = data.isActive || false;
                     document.getElementById('setting-banner-heading').value = data.heading || '';
                     document.getElementById('setting-banner-message').value = data.message || '';
-                    
-                    document.getElementById('setting-existing-logo').value = data.logoUrl || '';
-                    if(data.logoUrl) {
-                        document.getElementById('setting-logo-preview').src = data.logoUrl;
-                        document.getElementById('setting-logo-preview-container').classList.remove('hidden');
-                        document.getElementById('admin-dynamic-logo').src = data.logoUrl;
-                        document.getElementById('admin-header-logo').classList.remove('hidden');
-                    } else {
-                        document.getElementById('setting-logo-preview-container').classList.add('hidden');
-                        document.getElementById('admin-header-logo').classList.add('hidden');
-                    }
+                } else {
+                    document.getElementById('setting-banner-heading').value = "";
+                    document.getElementById('setting-banner-message').value = "";
                 }
             });
 
@@ -599,40 +436,59 @@
             });
         }
 
-        // 🚀 SETTINGS UPLOADER
+        // 🚀 DYNAMIC BANNER SAVER
         async function saveBannerSettings() {
-            showLoader("Saving Settings...");
+            const btn = event.target;
+            btn.innerText = "Saving...";
             
-            let finalLogoUrl = document.getElementById('setting-existing-logo').value;
+            const payload = {
+                isActive: document.getElementById('setting-banner-active').checked,
+                heading: document.getElementById('setting-banner-heading').value.trim(),
+                message: document.getElementById('setting-banner-message').value.trim()
+            };
             
             try {
-                if (pendingUploads['setting-logo-upload']) {
-                    showLoader("Uploading Logo...");
-                    finalLogoUrl = await uploadBlobToFirebase(pendingUploads['setting-logo-upload'], 'logos');
-                    pendingUploads['setting-logo-upload'] = null;
-                }
-
-                const oldDoc = await db.collection('store_settings').doc('banner').get();
-                if (oldDoc.exists && oldDoc.data().logoUrl && oldDoc.data().logoUrl !== finalLogoUrl) {
-                    await deleteFileFromUrl(oldDoc.data().logoUrl);
-                }
-
-                const payload = {
-                    logoUrl: finalLogoUrl,
-                    isActive: document.getElementById('setting-banner-active').checked,
-                    heading: document.getElementById('setting-banner-heading').value.trim(),
-                    message: document.getElementById('setting-banner-message').value.trim()
-                };
-                
                 await db.collection('store_settings').doc('banner').set(payload);
-                hideLoader();
+                btn.className = "w-full bg-emerald-500 text-white font-black py-3 rounded-lg transition-colors";
+                btn.innerText = "✓ Banner Updated";
+                setTimeout(() => {
+                    btn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-lg transition-colors";
+                    btn.innerText = "Update Banner";
+                }, 2000);
             } catch(e) {
-                hideLoader();
-                alert("Error saving settings: " + e.message);
+                alert("Error saving banner: " + e.message);
+                btn.innerText = "Update Banner";
             }
         }
 
-        // --- QUICK UPDATES ---
+        // --- CUSTOM CONFIRM ---
+        let pendingConfirmCallback = null;
+        function showCustomConfirm(message, callback, title = "Confirm", isDanger = false) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-message').innerText = message;
+            const borderBox = document.getElementById('confirm-border');
+            const yesBtn = document.getElementById('confirm-yes-btn');
+            
+            if (isDanger) {
+                borderBox.className = "bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-red-600 text-center animate-fade-in-up";
+                yesBtn.className = "flex-1 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-3 rounded-lg";
+            } else {
+                borderBox.className = "bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border-t-4 border-blue-500 text-center animate-fade-in-up";
+                yesBtn.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg";
+            }
+            pendingConfirmCallback = callback;
+            document.getElementById('custom-confirm').classList.remove('hidden');
+        }
+        function closeConfirm(result) {
+            document.getElementById('custom-confirm').classList.add('hidden');
+            const cb = pendingConfirmCallback;
+            pendingConfirmCallback = null; 
+            if (result && cb) cb();
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // QUICK UPDATES & UNDO
         function addQuickUpdate(docId, msg, statusStr) {
             showCustomConfirm(`Update status to "${statusStr}"?`, async () => {
                 const docRef = db.collection('orders_public').doc(docId);
@@ -668,6 +524,7 @@
         function openOrderModal(id = null) {
             document.getElementById('o-id').value = id || '';
             const data = id ? allData.orders[id] : { name: '', eta: '', status: 'Preparing', products: [], updates: [] };
+            
             document.getElementById('order-modal-title').innerText = id ? 'Edit Order' : 'New Order';
             document.getElementById('o-name').value = data.name;
             document.getElementById('o-eta').value = data.eta === 'TBA' ? '' : (data.eta || '');
@@ -687,12 +544,12 @@
             } else {
                 tlWrap.classList.add('hidden'); tl.innerHTML = '';
             }
+            
             document.getElementById('btn-del-order').classList.toggle('hidden', !id);
             document.getElementById('modal-order').classList.remove('hidden');
         }
 
         async function saveOrder() {
-            showLoader("Saving Order...");
             const id = document.getElementById('o-id').value;
             const payload = {
                 name: document.getElementById('o-name').value,
@@ -700,55 +557,34 @@
                 status: document.getElementById('o-status').value,
                 products: document.getElementById('o-products').value.split(',').map(p=>p.trim()).filter(p=>p)
             };
-            if(!payload.name) {
-                hideLoader();
-                return alert("Needs a name!");
-            }
+            if(!payload.name) return alert("Needs a name!");
 
-            try {
-                if(id) {
-                    const uLines = document.querySelectorAll('.update-line');
-                    payload.updates = Array.from(uLines).map(l => ({ date: l.querySelector('.u-date').value, msg: l.querySelector('.u-msg').value })).filter(u => u.date && u.msg);
-                    if(payload.status === "Delivered" && payload.updates.length) payload.deliveredDate = payload.updates[payload.updates.length-1].date;
-                    await db.collection('orders_public').doc(id).update(payload);
-                } else {
-                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    payload.updates = [{ date: new Date().toLocaleDateString(), msg: "Order placed." }];
-                    await db.collection('orders_public').add(payload);
-                }
-                hideLoader();
-                closeModal('modal-order');
-            } catch (e) {
-                hideLoader();
-                alert("Error: " + e.message);
+            if(id) {
+                const uLines = document.querySelectorAll('.update-line');
+                payload.updates = Array.from(uLines).map(l => ({ date: l.querySelector('.u-date').value, msg: l.querySelector('.u-msg').value })).filter(u => u.date && u.msg);
+                if(payload.status === "Delivered" && payload.updates.length) payload.deliveredDate = payload.updates[payload.updates.length-1].date;
+                await db.collection('orders_public').doc(id).update(payload);
+            } else {
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                payload.updates = [{ date: new Date().toLocaleDateString(), msg: "Order placed." }];
+                await db.collection('orders_public').add(payload);
             }
+            closeModal('modal-order');
         }
-        
         async function deleteOrder() { 
             showCustomConfirm("This will permanently delete this order.", async () => {
-                showLoader("Deleting Order...");
                 await db.collection('orders_public').doc(document.getElementById('o-id').value).delete(); 
-                hideLoader();
                 closeModal('modal-order');
             }, "Delete Order", true);
         }
 
-        // 🚀 POKEMON WITH UPLOADER & SWEEPER
+        // POKEMON
         function openPokemonModal(id = null) {
             document.getElementById('p-id').value = id || '';
             const data = id ? allData.pokemon[id] : { name: '', image: '', cost: '', stock: 0, isComingSoon: false, releaseDate: '' };
             
             document.getElementById('p-name').value = data.name;
-            pendingUploads['p-image-upload'] = null; 
-            
-            document.getElementById('p-existing-image').value = data.image || '';
-            document.getElementById('p-image-upload').value = '';
-            const previewContainer = document.getElementById('p-image-preview-container');
-            if(data.image) { 
-                document.getElementById('p-image-preview').src = getFullImageUrl(data.image); 
-                previewContainer.classList.remove('hidden'); 
-            } else { previewContainer.classList.add('hidden'); }
-            
+            document.getElementById('p-image').value = data.image;
             document.getElementById('p-cost').value = data.cost;
             document.getElementById('p-stock').value = data.stock;
             document.getElementById('p-coming').checked = data.isComingSoon;
@@ -759,66 +595,34 @@
         }
 
         async function savePokemon() {
-            showLoader("Saving Item...");
             const id = document.getElementById('p-id').value;
-            let finalImageUrl = document.getElementById('p-existing-image').value;
-            
-            try {
-                if (pendingUploads['p-image-upload']) {
-                    showLoader("Uploading Photo...");
-                    finalImageUrl = await uploadBlobToFirebase(pendingUploads['p-image-upload'], 'pokemon');
-                    pendingUploads['p-image-upload'] = null;
-                }
+            const payload = {
+                name: document.getElementById('p-name').value,
+                image: document.getElementById('p-image').value,
+                cost: Number(document.getElementById('p-cost').value),
+                stock: Number(document.getElementById('p-stock').value),
+                isComingSoon: document.getElementById('p-coming').checked,
+                releaseDate: document.getElementById('p-release').value
+            };
+            if(!payload.name || !payload.image) return alert("Needs Name and Image Path!");
 
-                if(!document.getElementById('p-name').value || !finalImageUrl) {
-                    hideLoader();
-                    return alert("Needs Name and Image!");
-                }
-
-                if (id) {
-                    const oldDoc = await db.collection('inventory_sealed').doc(id).get();
-                    if (oldDoc.exists && oldDoc.data().image && oldDoc.data().image !== finalImageUrl) {
-                        await deleteFileFromUrl(oldDoc.data().image);
-                    }
-                }
-
-                const payload = {
-                    name: document.getElementById('p-name').value,
-                    image: finalImageUrl,
-                    cost: Number(document.getElementById('p-cost').value),
-                    stock: Number(document.getElementById('p-stock').value),
-                    isComingSoon: document.getElementById('p-coming').checked,
-                    releaseDate: document.getElementById('p-release').value
-                };
-
-                if(id) {
-                    payload.sortOrder = allData.pokemon[id].sortOrder || 99;
-                    await db.collection('inventory_sealed').doc(id).set(payload);
-                } else {
-                    payload.sortOrder = currentSortedPokemon.length;
-                    await db.collection('inventory_sealed').add(payload);
-                }
-                hideLoader();
-                closeModal('modal-pokemon');
-            } catch(e) {
-                hideLoader();
-                alert("Error saving: " + e.message);
+            if(id) {
+                payload.sortOrder = allData.pokemon[id].sortOrder || 99;
+                await db.collection('inventory_sealed').doc(id).set(payload);
+            } else {
+                payload.sortOrder = currentSortedPokemon.length;
+                await db.collection('inventory_sealed').add(payload);
             }
+            closeModal('modal-pokemon');
         }
-
         async function deletePokemon() { 
             showCustomConfirm("Permanently delete this Pokemon item?", async () => {
-                showLoader("Deleting Item...");
-                const id = document.getElementById('p-id').value;
-                const doc = await db.collection('inventory_sealed').doc(id).get();
-                if(doc.exists && doc.data().image) await deleteFileFromUrl(doc.data().image);
-                await db.collection('inventory_sealed').doc(id).delete(); 
-                hideLoader();
+                await db.collection('inventory_sealed').doc(document.getElementById('p-id').value).delete(); 
                 closeModal('modal-pokemon');
             }, "Delete Item", true);
         }
 
-        // 🚀 ACCESSORIES WITH UPLOADER & SWEEPER
+        // ACCESSORY - CHECKLIST LOGIC
         function toggleVariantsUI() {
             const hasVars = document.getElementById('a-has-variants').checked;
             document.getElementById('a-predefined-variants').classList.toggle('hidden', !hasVars);
@@ -827,14 +631,9 @@
 
         function toggleColorInput(i) {
             const isChecked = document.getElementById(`v-cb-${i}`).checked;
-            const uploadZone = document.getElementById(`v-upload-zone-${i}`);
-            if(isChecked) { uploadZone.classList.remove('hidden'); } 
-            else { 
-                uploadZone.classList.add('hidden'); 
-                document.getElementById(`v-img-upload-${i}`).value = ''; 
-                document.getElementById(`v-existing-img-${i}`).value = '';
-                pendingUploads[`v-img-upload-${i}`] = null;
-            }
+            const imgInput = document.getElementById(`v-img-${i}`);
+            if(isChecked) { imgInput.classList.remove('hidden'); } 
+            else { imgInput.classList.add('hidden'); imgInput.value = ''; }
         }
 
         function openAccessoryModal(id = null) {
@@ -842,28 +641,14 @@
             const data = id ? allData.accessories[id] : { name: '', image: '', cost: '', isLimited: false, variants: [] };
             
             document.getElementById('a-name').value = data.name;
-            
-            // Main Image Reset
-            pendingUploads['a-image-upload'] = null;
-            document.getElementById('a-existing-image').value = data.image || '';
-            document.getElementById('a-image-upload').value = '';
-            const mainContainer = document.getElementById('a-image-preview-container');
-            if(data.image) { 
-                document.getElementById('a-image-preview').src = getFullImageUrl(data.image); 
-                mainContainer.classList.remove('hidden'); 
-            } else { mainContainer.classList.add('hidden'); }
-
+            document.getElementById('a-image').value = data.image || '';
             document.getElementById('a-cost').value = data.cost;
             document.getElementById('a-limited').checked = data.isLimited;
             
-            // Variant Reset
             PREDEFINED_COLORS.forEach((_, i) => {
                 document.getElementById(`v-cb-${i}`).checked = false;
-                document.getElementById(`v-existing-img-${i}`).value = '';
-                document.getElementById(`v-img-upload-${i}`).value = '';
-                document.getElementById(`v-upload-zone-${i}`).classList.add('hidden');
-                document.getElementById(`v-img-preview-container-${i}`).classList.add('hidden');
-                pendingUploads[`v-img-upload-${i}`] = null;
+                document.getElementById(`v-img-${i}`).value = '';
+                document.getElementById(`v-img-${i}`).classList.add('hidden');
             });
 
             const hasVariants = data.variants && data.variants.length > 0;
@@ -875,10 +660,8 @@
                     const index = PREDEFINED_COLORS.findIndex(c => c.hex.toLowerCase() === v.color.toLowerCase());
                     if(index !== -1) {
                         document.getElementById(`v-cb-${index}`).checked = true;
-                        document.getElementById(`v-upload-zone-${index}`).classList.remove('hidden');
-                        document.getElementById(`v-existing-img-${index}`).value = v.image;
-                        document.getElementById(`v-img-preview-${index}`).src = getFullImageUrl(v.image);
-                        document.getElementById(`v-img-preview-container-${index}`).classList.remove('hidden');
+                        document.getElementById(`v-img-${index}`).value = v.image;
+                        document.getElementById(`v-img-${index}`).classList.remove('hidden');
                     }
                 });
             }
@@ -888,100 +671,51 @@
         }
 
         async function saveAccessory() {
-            showLoader("Saving Accessory...");
             const id = document.getElementById('a-id').value;
             const hasVariants = document.getElementById('a-has-variants').checked;
+            const mainImage = document.getElementById('a-image').value.trim();
 
-            try {
-                const payload = {
-                    name: document.getElementById('a-name').value,
-                    cost: Number(document.getElementById('a-cost').value),
-                    isLimited: document.getElementById('a-limited').checked,
-                    variants: []
-                };
+            const payload = {
+                name: document.getElementById('a-name').value,
+                cost: Number(document.getElementById('a-cost').value),
+                isLimited: document.getElementById('a-limited').checked,
+                variants: []
+            };
 
-                if(!payload.name) {
-                    hideLoader();
-                    return alert("Needs a Name!");
-                }
+            if(!payload.name) return alert("Needs a Name!");
 
-                let newUrls = []; // Track urls we want to keep
-
-                if (hasVariants) {
-                    for (let i = 0; i < PREDEFINED_COLORS.length; i++) {
-                        if (document.getElementById(`v-cb-${i}`).checked) {
-                            let finalVUrl = document.getElementById(`v-existing-img-${i}`).value;
-                            if (pendingUploads[`v-img-upload-${i}`]) {
-                                showLoader(`Uploading ${PREDEFINED_COLORS[i].name} Photo...`);
-                                finalVUrl = await uploadBlobToFirebase(pendingUploads[`v-img-upload-${i}`], 'accessories');
-                                pendingUploads[`v-img-upload-${i}`] = null;
-                            }
-                            if(!finalVUrl) {
-                                hideLoader();
-                                return alert(`Need an image for ${PREDEFINED_COLORS[i].name}!`);
-                            }
-                            payload.variants.push({ color: PREDEFINED_COLORS[i].hex, image: finalVUrl });
-                            newUrls.push(finalVUrl);
-                        }
+            if (hasVariants) {
+                let validImages = true;
+                PREDEFINED_COLORS.forEach((color, i) => {
+                    if (document.getElementById(`v-cb-${i}`).checked) {
+                        const imgPath = document.getElementById(`v-img-${i}`).value.trim();
+                        if (!imgPath) validImages = false;
+                        else payload.variants.push({ color: color.hex, image: imgPath });
                     }
-                    if(payload.variants.length === 0) {
-                        hideLoader();
-                        return alert("Please select at least one color variant.");
-                    }
-                    payload.image = payload.variants[0].image; 
-                } else {
-                    let finalMainUrl = document.getElementById('a-existing-image').value;
-                    if (pendingUploads['a-image-upload']) {
-                        showLoader("Uploading Photo...");
-                        finalMainUrl = await uploadBlobToFirebase(pendingUploads['a-image-upload'], 'accessories');
-                        pendingUploads['a-image-upload'] = null;
-                    }
-                    if(!finalMainUrl) {
-                        hideLoader();
-                        return alert("Needs a Main Image!");
-                    }
-                    payload.image = finalMainUrl;
-                    newUrls.push(finalMainUrl);
-                }
-
-                if(id) {
-                    const oldDoc = await db.collection('inventory_accessories').doc(id).get();
-                    if(oldDoc.exists) {
-                        let oldUrls = [];
-                        if (oldDoc.data().image) oldUrls.push(oldDoc.data().image);
-                        if (oldDoc.data().variants) oldDoc.data().variants.forEach(v => { if (v.image) oldUrls.push(v.image) });
-                        for (let oldUrl of oldUrls) {
-                            if (!newUrls.includes(oldUrl)) await deleteFileFromUrl(oldUrl);
-                        }
-                    }
-                    payload.sortOrder = allData.accessories[id].sortOrder || 99;
-                    await db.collection('inventory_accessories').doc(id).set(payload);
-                } else {
-                    payload.sortOrder = currentSortedAccessories.length;
-                    await db.collection('inventory_accessories').add(payload);
-                }
-                hideLoader();
-                closeModal('modal-accessory');
-            } catch(e) {
-                hideLoader();
-                alert("Error saving: " + e.message);
+                });
+                
+                if(!validImages) return alert("Please type an image path for all selected colors.");
+                if(payload.variants.length === 0) return alert("Please select at least one color variant.");
+                
+                payload.image = payload.variants[0].image; // fallback
+            } else {
+                if(!mainImage) return alert("Needs a Main Image Path!");
+                payload.image = mainImage;
             }
+
+            if(id) {
+                payload.sortOrder = allData.accessories[id].sortOrder || 99;
+                await db.collection('inventory_accessories').doc(id).set(payload);
+            } else {
+                payload.sortOrder = currentSortedAccessories.length;
+                await db.collection('inventory_accessories').add(payload);
+            }
+            closeModal('modal-accessory');
         }
         
         async function deleteAccessory() { 
             showCustomConfirm("Permanently delete this Accessory?", async () => {
-                showLoader("Deleting Accessory...");
-                const id = document.getElementById('a-id').value;
-                const doc = await db.collection('inventory_accessories').doc(id).get();
-                if(doc.exists) {
-                    const data = doc.data();
-                    if(data.image) await deleteFileFromUrl(data.image);
-                    if(data.variants) {
-                        for(let v of data.variants) if(v.image) await deleteFileFromUrl(v.image);
-                    }
-                }
-                await db.collection('inventory_accessories').doc(id).delete(); 
-                hideLoader();
+                await db.collection('inventory_accessories').doc(document.getElementById('a-id').value).delete(); 
                 closeModal('modal-accessory');
             }, "Delete Accessory", true);
         }
