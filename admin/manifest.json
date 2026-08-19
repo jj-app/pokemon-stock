@@ -1,0 +1,15 @@
+{
+  "name": "Box Goblin Admin",
+  "short_name": "BG Admin",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f4f5",
+  "theme_color": "#f4f4f5",
+  "icons": [
+    {
+      "src": "../icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
