@@ -32,13 +32,12 @@
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
-    <div id="logo-container" class="max-w-md mx-auto pt-4 pb-5 px-4 flex justify-center items-center hidden">
-        <img id="dynamic-logo" alt="Store Logo" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
+    <!-- HARDCODED LOGO -->
+    <div class="max-w-md mx-auto pt-4 pb-5 px-4 flex justify-center items-center">
+        <img src="logo.webp" alt="Box Goblin" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
     </div>
 
-    <div id="no-logo-spacer" class="h-4 w-full"></div>
-
-    <!-- 🚀 UPDATED TABS (Scrollable for 4 items) -->
+    <!-- TABS -->
     <div class="max-w-md mx-auto mb-5 flex gap-1 overflow-x-auto snap-x hide-scroll bg-zinc-300 rounded-xl p-1 shadow-inner border border-zinc-300/50">
         <button id="tab-btn-sealed" onclick="switchTab('sealed')" class="flex-shrink-0 flex-1 px-3 py-2.5 text-xs font-black rounded-lg transition-all duration-300 bg-white text-zinc-900 shadow-sm pointer-events-none snap-start whitespace-nowrap">Pokemon</button>
         <button id="tab-btn-japanese" onclick="switchTab('japanese')" class="flex-shrink-0 flex-1 px-3 py-2.5 text-xs font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer snap-start whitespace-nowrap">Japanese</button>
@@ -46,6 +45,7 @@
         <button id="tab-btn-tracking" onclick="switchTab('tracking')" class="flex-shrink-0 flex-1 px-3 py-2.5 text-xs font-black rounded-lg transition-all duration-300 text-zinc-500 hover:text-zinc-700 cursor-pointer snap-start whitespace-nowrap">Orders</button>
     </div>
 
+    <!-- 🚀 DYNAMIC BANNER -->
     <div id="banner-container" class="hidden max-w-md mx-auto mb-6 bg-amber-100 border border-amber-300 rounded-xl p-3.5 shadow-sm items-start gap-3 transition-all"></div>
 
     <div class="max-w-md mx-auto w-full space-y-3.5" id="bucket-sealed"><p class="text-center text-sm font-bold text-zinc-400 mt-10 animate-pulse">Loading Pokemon...</p></div>
@@ -105,22 +105,8 @@
             return baseUrl + path.replace(/^\//, ''); 
         }
 
-        // --- RENDER FUNCTIONS (For Caching & Speed) ---
         function renderSettings(data) {
             const bannerContainer = document.getElementById('banner-container');
-            const logoContainer = document.getElementById('logo-container');
-            const spacer = document.getElementById('no-logo-spacer');
-            const dynamicLogo = document.getElementById('dynamic-logo');
-
-            if (data.logoUrl) {
-                dynamicLogo.src = data.logoUrl;
-                logoContainer.classList.remove('hidden');
-                spacer.classList.add('hidden');
-            } else {
-                logoContainer.classList.add('hidden');
-                spacer.classList.remove('hidden');
-            }
-
             if (data.isActive && data.message) {
                 let headingHTML = data.heading ? `<h3 class="text-sm font-black text-amber-900 tracking-tight mb-0.5">${data.heading}</h3>` : '';
                 bannerContainer.innerHTML = `<div class="w-full">${headingHTML}<p class="text-xs font-bold text-amber-800 leading-relaxed whitespace-pre-wrap">${data.message}</p></div>`;
@@ -202,17 +188,21 @@
                 let imageBlockHTML = '';
                 
                 if (item.variants && item.variants.length > 0) {
+                    // STACKED IMAGES FOR INSTANT ZERO-FLICKER SWAP
                     let stackedImages = item.variants.map((v, vIndex) => {
-                        const visibilityClass = vIndex === 0 ? 'block' : 'hidden';
-                        return `<img src="${getFullImageUrl(v.image)}" alt="${item.name}" loading="lazy" class="variant-img-${index} w-full h-full object-cover ${visibilityClass}">`;
+                        const opacityClass = vIndex === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0';
+                        return `<img src="${getFullImageUrl(v.image)}" alt="${item.name}" class="variant-img-${index} absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${opacityClass}">`;
                     }).join('');
-                    imageBlockHTML = `<div class="w-full h-auto aspect-square rounded shadow-sm bg-white overflow-hidden">${stackedImages}</div>`;
+                    
+                    imageBlockHTML = `<div class="w-full h-auto aspect-square rounded shadow-sm bg-white overflow-hidden relative">${stackedImages}</div>`;
 
                     let dotsHTML = item.variants.map((v, vIndex) => {
                         const isActive = vIndex === 0 ? 'ring-2 ring-offset-1 ring-zinc-800 scale-110 opacity-100' : 'scale-90 opacity-70 border border-zinc-300';
-                        return `<button onclick="selectVariant('${index}', ${vIndex})" id="btn-${index}-${vIndex}" class="variant-btn-${index} w-8 h-8 rounded-full shadow-sm transition-all duration-300 focus:outline-none ${isActive}" style="background-color: ${v.color};" title="Swap Color"></button>`;
+                        return `<button onclick="selectVariant('${index}', ${vIndex})" id="btn-${index}-${vIndex}" class="variant-btn-${index} w-7 h-7 rounded-full shadow-sm transition-all duration-300 focus:outline-none ${isActive}" style="background-color: ${v.color};" title="Swap Color"></button>`;
                     }).join('');
-                    rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="flex flex-wrap gap-2 justify-center w-full">${dotsHTML}</div>`;
+                    
+                    // 3 COLUMN DOT GRID
+                    rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 block text-center">Colors</span><div class="grid grid-cols-3 gap-1.5 justify-items-center w-full px-1">${dotsHTML}</div>`;
                 } else {
                     imageBlockHTML = `<img src="${getFullImageUrl(item.image)}" alt="${item.name}" loading="lazy" class="w-full h-auto aspect-square object-cover rounded shadow-sm bg-white">`;
                     rightSideHTML = `<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Status</span><span class="text-sm font-black text-emerald-600 leading-tight mt-1 text-center">Available</span>`;
@@ -346,11 +336,17 @@
             document.getElementById('bucket-tracking').innerHTML = htmlPayload;
         });
 
+        // 🚀 ZERO-FLICKER OPACITY SWAP
         function selectVariant(itemIndex, variantIndex) {
             const images = document.querySelectorAll(`.variant-img-${itemIndex}`);
             images.forEach((img, idx) => {
-                if (idx === variantIndex) { img.classList.remove('hidden'); img.classList.add('block'); } 
-                else { img.classList.remove('block'); img.classList.add('hidden'); }
+                if (idx === variantIndex) { 
+                    img.classList.remove('opacity-0', 'z-0'); 
+                    img.classList.add('opacity-100', 'z-10'); 
+                } else { 
+                    img.classList.remove('opacity-100', 'z-10'); 
+                    img.classList.add('opacity-0', 'z-0'); 
+                }
             });
             const buttons = document.querySelectorAll(`.variant-btn-${itemIndex}`);
             buttons.forEach(btn => {
@@ -367,8 +363,7 @@
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
-            const webhookUrl = "https://discord.com/api/webhooks/1531224586975449189/RhAZQ7bAX3F36Va8IcJtkqN7l80T6KvoRCxDNXU9Ut_B0H2vJnHdLA6DdSYSOfN9KnXl"; 
-            try { await fetch(webhookUrl, { method: "POST", headers: { "Content-type": "application/json" }, body: JSON.stringify({ content: "@everyone New Store Visitor!" }) }); } catch (e) {}
+            // Your webhook logic here...
         }
         fireDiscordAlert();
     </script>
