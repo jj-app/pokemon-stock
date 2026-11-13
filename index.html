@@ -32,9 +32,9 @@
 </head>
 <body class="bg-zinc-200 min-h-screen p-4 pb-12 font-sans">
 
-    <!-- HARDCODED LOGO -->
+    <!-- HARDCODED LOGO (Restored to Full Size) -->
     <div class="max-w-md mx-auto pt-4 pb-5 px-4 flex justify-center items-center">
-        <img src="logo.webp" alt="Box Goblin" class="h-[72px] md:h-20 w-auto object-contain drop-shadow-sm">
+        <img src="logo.webp" alt="Box Goblin" class="h-24 md:h-28 w-auto object-contain drop-shadow-sm">
     </div>
 
     <!-- TABS -->
@@ -363,7 +363,8 @@
         async function fireDiscordAlert() {
             if (sessionStorage.getItem('store_visited')) return;
             sessionStorage.setItem('store_visited', 'true');
-            // Your webhook logic here...
+            const webhookUrl = "https://discord.com/api/webhooks/1531224586975449189/RhAZQ7bAX3F36Va8IcJtkqN7l80T6KvoRCxDNXU9Ut_B0H2vJnHdLA6DdSYSOfN9KnXl"; 
+            try { await fetch(webhookUrl, { method: "POST", headers: { "Content-type": "application/json" }, body: JSON.stringify({ content: "@everyone New Store Visitor!" }) }); } catch (e) {}
         }
         fireDiscordAlert();
     </script>
